@@ -2,20 +2,24 @@
 <html>
     <head>
         <title>Random</title>
+
+        <script src="../load_essentials.js"></script>
+        
         <link rel="stylesheet" href="css.css">
         <script src=seedrandom.js></script>
         <script>
             // Sets Math.random to a PRNG initialized using the given explicit seed.
+            let bool = false;
             let randomGen = new Math.seedrandom('hello.');
         </script>
-
-        <!--#include file="../header.html" -->
-
-        <object style = "width: 100%; position: relative;" type="text/html" data="../header.html"></object>
     </head>
     <body>
+        <header id="load_essentials_header"></header>
+
         <div id="options">
-            <p>My first paragraph.</p>
+            <p id = "stuff">My first paragraph.</p>
         </div>
+
+        <footer id="load_essentials_footer"></footer>
     </body>
 </html>
