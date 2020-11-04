@@ -20,7 +20,7 @@ var config = { //Can be configured in window, don't have to change the file ever
     selectedTheme: 0, //0 = Dark Theme, 1 = Light Theme
     autoRotate: false, //Whether to rotate through games automatically
     selectedGame: 0, //Controls selected game (0 = first game selected, 1 = 2nd, ect)
-    requestSpeed: 20, //Number of seconds in between requests, lowering this may result in throttling.
+    requestSpeed: 25, //Number of seconds in between requests, lowering this may result in throttling.
     //Increase the value if you experience throttling errors
     useProxy: true, //If true, uses the CORS-Anywhere proxy, which adds cors headers to any resouce, such as Roblox APIs
     proxyUrl: "https://cors-anywhere.herokuapp.com/", //Proxy Url
@@ -325,7 +325,7 @@ function updateDataFrom(array,url,mode) { //Grab data for a specific mode
                 alert("Due to CORS Error, the appropriate APIs could not be fetched. " +
                 "Since 'Use Proxy' is disabled, "+appName+"'s Requests were blocked by your browser. "+ 
                 "Enable the proxy to allow requests.")
-            } else if (config.proxyUrl!=="https://cors-anywhere.herokuapp.com/") {
+            } else if (config.proxyUrl!=="https://cors.herokuapp.com/") {
                 alert("Due to CORS Error, the appropriate APIs could not be fetched. "+ 
                 "'Use Proxy' is enabled, so you likely modified the proxy url. "+ 
                 "The proxy url you provided does not add a CORS header, which is required for your browser.")
@@ -445,7 +445,7 @@ function doAnimation() {
     var img = document.getElementById("i1")
     if (b1 && b2 && img && img.src && img.complete) {
         if (games.length>1) {
-            var r = img.getBoundingClientRect();
+            var r = img.getBoundingClientRect();z
             if (mx>=r.left && mx<=r.right && my>=r.top && my<=r.bottom) {
                 aa+=(1-aa)*0.125;
             } else {
@@ -695,10 +695,13 @@ function setbclick() {
 }
 
 function setTheme() {
-    config.selectedTheme++;
-    if (!themes[config.selectedTheme]) {
-        config.selectedTheme = 0;
-    }
+    alert("No other themes found")
+    return;
+
+    // config.selectedTheme++;
+    // if (!themes[config.selectedTheme]) {
+    //     config.selectedTheme = 0;
+    // }
 }
 
 function setSmart(){
@@ -1137,119 +1140,122 @@ hr {
     </style>
 </head>
     <body onload="start()">
-        <header id="load_essentials_header"></header>
+        
+        <div id="header"></div>
 
-        <div style = "position: relative; top: 20px;">
-            <div id="maindiv">
-                <h1 class="bigh" id = "bigh2"></h1>
-                <div class="containerimg">
-                    <img id="i1" alt="Image"></img>
-                    <img id="i2" alt="Image"></img>
-                    <button id="lb" onclick="lbf()">&lt;</button>
-                    <button id="rb" onclick="rbf()">&gt;</button>
+        <div id="body">
+            <div style = "position: relative; top: 20px;">
+                <div id="maindiv">
+                    <h1 class="bigh" id = "bigh2"></h1>
+                    <div class="containerimg">
+                        <img id="i1" alt="Image"></img>
+                        <img id="i2" alt="Image"></img>
+                        <button id="lb" onclick="lbf()">&lt;</button>
+                        <button id="rb" onclick="rbf()">&gt;</button>
+                    </div>
+                    
+                    <a class = "s" id="a6" href = "" target = "_blank">
+                        <h1 class="bigh" id = "bigh"></h1>
+                    </a>
+
+                    <div class = "container">
+                        <a class = "s" id="a1" href = "" target = "_blank">
+                            <h3 class = "h">Playing</h3>
+                            <canvas class = "c" id=1></canvas>
+                        </a>
+
+                        <div class = "s2"> </div>
+
+                        <a class = "s" id="a2" href = "" target = "_blank">
+                            <h3 class = "h">Total Visits</h3>
+                            <canvas class = "c" id=2></canvas>
+                        </a>
+                        
+                        <div class = "s2"> </div>
+
+                        <a class = "s" id="a3" href = "" target = "_blank">
+                            <h3 class = "h">Favorites</h3>
+                            <canvas class = "c" id=3></canvas>
+                        </a>
+                        
+                        <div class = "s2"> </div>
+
+                        <a class = "s" id="a4" href = "" target = "_blank">
+                            <h3 class = "h">Likes</h3>
+                            <canvas class = "c" id=4></canvas>
+                        </a>
+                        
+                        <div class = "s2"> </div>
+
+                        <a class = "s" id="a5" href = "" target = "_blank">
+                            <h3 class = "h">Dislikes</h3>
+                            <canvas class = "c" id=5></canvas>
+                        </a>
+                    </div>
                 </div>
-                
-                <a class = "s" id="a6" href = "" target = "_blank">
-                    <h1 class="bigh" id = "bigh"></h1>
-                </a>
+                <button id="setb" onclick="setbclick()">⚙</button>
+                <div id="setdiv">
+                    <h1 class="sett" id="seth">Settings</h1>
+                    <br>
+                    <h1 class="setthh" id="loadedheader">Loaded Games</h1>
+                    <p id ="gamelist" class="sett"></p>
+                    <br>
+                    <button id= "removeAll" class="settb" onclick="removeAllGames()">Remove All</button>
+                    <hr>
 
-                <div class = "container">
-                    <a class = "s" id="a1" href = "" target = "_blank">
-                        <h3 class = "h">Playing</h3>
-                        <canvas class = "c" id=1></canvas>
-                    </a>
 
-                    <div class = "s2"> </div>
+                    <h1 class="setthh">Add Game By Name & Creator</h1>
+                    <p class="sett">Input Game Name (Doesn't have to be full): </p> 
+                    <br>
+                    <input id = "gameAddS1" class="sett" type="text">
+                    <p class="sett">Game Creator (Name of group or user creator, leave blank for 1st result): </p> 
+                    <input id = "gameAddS2" class="sett" type="text">
+                    <button id= "gameAddS3" class="settb" onclick="searchTerms()">Search</button>
+                    <br>
+                    <p id="gameAddS4" class="sett" style="visibility: hidden">Result here</p>
+                    <button id= "gameAddS5" class="settb" onclick="addTerms()" style="visibility: hidden">Add Result</button>
+                    <hr>
 
-                    <a class = "s" id="a2" href = "" target = "_blank">
-                        <h3 class = "h">Total Visits</h3>
-                        <canvas class = "c" id=2></canvas>
-                    </a>
-                    
-                    <div class = "s2"> </div>
 
-                    <a class = "s" id="a3" href = "" target = "_blank">
-                        <h3 class = "h">Favorites</h3>
-                        <canvas class = "c" id=3></canvas>
-                    </a>
-                    
-                    <div class = "s2"> </div>
+                    <h1 class="setthh">Add Game By Url (More Steps)</h1>
+                    <p class="sett">Input Game Url To Get Universe Id <br> (Ex: www.roblox.com/games/1689414409/Roblox-Uno): </p> 
+                    <input id = "gameAddI" class="sett" type="text">
+                    <button id= "gameAddB" class="settb" onclick="addGame()">Get Game Universe Id</button>
+                    <p id = "gameAddH2" class="sett"></p>
+                    <a id = "gameAddH" class="sett" target="_blank"></a>
+                    <br>
+                    <p class="sett">Input Universe Id <br> (Not roblox.com/games/id. That id is the place id): </p> 
+                    <input id = "gameAddI2" class="sett" type="text">
+                    <button id= "gameAddB2" class="settb" onclick="addGameId()">Add Game By Universe Id</button>
+                    <hr>
 
-                    <a class = "s" id="a4" href = "" target = "_blank">
-                        <h3 class = "h">Likes</h3>
-                        <canvas class = "c" id=4></canvas>
-                    </a>
-                    
-                    <div class = "s2"> </div>
 
-                    <a class = "s" id="a5" href = "" target = "_blank">
-                        <h3 class = "h">Dislikes</h3>
-                        <canvas class = "c" id=5></canvas>
-                    </a>
+                    <h1 class="setthh">Customization</h1>
+                    <p class="sett">Selected Theme: </p> <button id="themeSet" class="settb" onclick="setTheme()">Loading...</button>
+                    <br>
+                    <p class="sett">Auto Rotate<br>(Rotate through slowly): </p> <button id="rotateSet" class="settb" onclick="setRotate()">Loading...</button>
+                    <br>
+                    <p class="sett">Use CORS Proxy: </p> <button id="proxySet" class="settb" onclick="setProxy()">Loading...</button>
+                    <br>
+                    <p class="sett">Smart Update: </p> <button id="smartSet" class="settb" onclick="setSmart()">Loading...</button>
+                    <p class="sett">Smart Update updates data for only the game currently visible. 
+                        It does not affect the fact that all games will load on startup.</p> 
+                    <button id="resetSet" class="settb" onclick="setReset()">Update Stats (Also updates link to store settings)</button>
+                    <hr>
+
+
+                    <h1 class="setthh">Sorts</h1>
+                    <p class="sett">Number To Display (1-40):</p> <input id = "gameSort" class="sett" type="text">
+                    <a class="sett" href="https://games.roblox.com/v1/games/sorts?model.gameSortsContext=GamesDefaultSorts" 
+                    target="_blank">Available Sort Tokens</a>
+                    <br>
+                    <p class="sett">Sort Token:</p> <input id = "gameSort2" class="sett" type="text">
+                    <button class="settb" onclick="getSort()">Get Results</button>
+                    <hr>    
                 </div>
-            </div>
-            <button id="setb" onclick="setbclick()">⚙</button>
-            <div id="setdiv">
-                <h1 class="sett" id="seth">Settings</h1>
-                <br>
-                <h1 class="setthh" id="loadedheader">Loaded Games</h1>
-                <p id ="gamelist" class="sett"></p>
-                <br>
-                <button id= "removeAll" class="settb" onclick="removeAllGames()">Remove All</button>
-                <hr>
-
-
-                <h1 class="setthh">Add Game By Name & Creator</h1>
-                <p class="sett">Input Game Name (Doesn't have to be full): </p> 
-                <br>
-                <input id = "gameAddS1" class="sett" type="text">
-                <p class="sett">Game Creator (Name of group or user creator, leave blank for 1st result): </p> 
-                <input id = "gameAddS2" class="sett" type="text">
-                <button id= "gameAddS3" class="settb" onclick="searchTerms()">Search</button>
-                <br>
-                <p id="gameAddS4" class="sett" style="visibility: hidden">Result here</p>
-                <button id= "gameAddS5" class="settb" onclick="addTerms()" style="visibility: hidden">Add Result</button>
-                <hr>
-
-
-                <h1 class="setthh">Add Game By Url (More Steps)</h1>
-                <p class="sett">Input Game Url To Get Universe Id <br> (Ex: www.roblox.com/games/1689414409/Roblox-Uno): </p> 
-                <input id = "gameAddI" class="sett" type="text">
-                <button id= "gameAddB" class="settb" onclick="addGame()">Get Game Universe Id</button>
-                <p id = "gameAddH2" class="sett"></p>
-                <a id = "gameAddH" class="sett" target="_blank"></a>
-                <br>
-                <p class="sett">Input Universe Id <br> (Not roblox.com/games/id. That id is the place id): </p> 
-                <input id = "gameAddI2" class="sett" type="text">
-                <button id= "gameAddB2" class="settb" onclick="addGameId()">Add Game By Universe Id</button>
-                <hr>
-
-
-                <h1 class="setthh">Customization</h1>
-                <p class="sett">Selected Theme: </p> <button id="themeSet" class="settb" onclick="setTheme()">Loading...</button>
-                <br>
-                <p class="sett">Auto Rotate<br>(Rotate through slowly): </p> <button id="rotateSet" class="settb" onclick="setRotate()">Loading...</button>
-                <br>
-                <p class="sett">Use CORS Proxy: </p> <button id="proxySet" class="settb" onclick="setProxy()">Loading...</button>
-                <br>
-                <p class="sett">Smart Update: </p> <button id="smartSet" class="settb" onclick="setSmart()">Loading...</button>
-                <p class="sett">Smart Update updates data for only the game currently visible. 
-                    It does not affect the fact that all games will load on startup.</p> 
-                <button id="resetSet" class="settb" onclick="setReset()">Update Stats (Also updates link to store settings)</button>
-                <hr>
-
-
-                <h1 class="setthh">Sorts</h1>
-                <p class="sett">Number To Display (1-40):</p> <input id = "gameSort" class="sett" type="text">
-                <a class="sett" href="https://games.roblox.com/v1/games/sorts?model.gameSortsContext=GamesDefaultSorts" 
-                target="_blank">Available Sort Tokens</a>
-                <br>
-                <p class="sett">Sort Token:</p> <input id = "gameSort2" class="sett" type="text">
-                <button class="settb" onclick="getSort()">Get Results</button>
-                <hr>
             </div>
         </div>
 
-        <footer id="load_essentials_footer"></footer>
+        <div id="footer"></div>
     </body>
 </html>

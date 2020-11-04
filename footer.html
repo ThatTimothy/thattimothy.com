@@ -1,19 +1,31 @@
 <html>
-    <footer id="footer">
+    <footer id="footer_contents">
+        <p id="footer_contents_p">
             Copyright © 2020 <a style="color: rgb(240, 240, 240)" href="https://ThatTimothy.com">ThatTimothy.com</a> - All Rights Reserved
+        </p>
     </footer>
 
     <style>
-        #footer {
+        #footer_contents {
             position: absolute;
+            bottom: 0px;
             left: 20%;
             width: 60%;
+            height: 50px;
+            font-size: 10px;
             font-weight: 600; 
-            font-family: Arial; 
+            font-family: Arial;
             padding: 10px;
             color: rgb(199, 199, 199);
-            font-size: 10px;
             text-align: center;
+        }
+
+        #footer_contents_p {
+            position: absolute;
+            left: 50%;
+            bottom: 5px;
+            transform: translate(-50%, 0%);
+            padding: 0px;
         }
     </style>
 </html>

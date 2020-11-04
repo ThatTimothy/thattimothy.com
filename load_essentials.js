@@ -6,27 +6,22 @@ let footerData;
 
 
 function allLoaded() {
-    let header = document.getElementById("load_essentials_header");
+    document.body.parentElement.style.width = "100%";
+    document.body.parentElement.style.height = "100%";
+
+    document.body.style.position = "relative";
+    document.body.style.minWidth = "100%";
+    document.body.style.minHeight = "100%";
+
+    let header = document.getElementById("header");
     header.innerHTML = headerData;
-    let footer = document.getElementById("load_essentials_footer");
+    let footer = document.getElementById("footer");
     footer.innerHTML = footerData;
 
     footer.style = "padding: 0px; margin: 0px;"
 
-    let embedFooter = footer.children[0];
-
-    function updateFooter() {
-        let contentS = document.body.getClientRects()[0].height;
-        if (contentS <= window.innerHeight) {
-            embedFooter.style.bottom = "0px";
-        } else {
-            embedFooter.style.top = "";
-            embedFooter.style.bottom = "";
-        }
-    }
-
-    updateFooter();
-    setInterval(updateFooter, 1000)
+    let bodyDiv = document.getElementById("body")
+    bodyDiv.style.paddingBottom = "60px";
 }
 
 fetch('../header.html').then(function(response) {
