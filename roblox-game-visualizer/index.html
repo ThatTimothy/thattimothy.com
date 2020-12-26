@@ -445,7 +445,7 @@ function doAnimation() {
     var img = document.getElementById("i1")
     if (b1 && b2 && img && img.src && img.complete) {
         if (games.length>1) {
-            var r = img.getBoundingClientRect();z
+            var r = img.getBoundingClientRect();
             if (mx>=r.left && mx<=r.right && my>=r.top && my<=r.bottom) {
                 aa+=(1-aa)*0.125;
             } else {
