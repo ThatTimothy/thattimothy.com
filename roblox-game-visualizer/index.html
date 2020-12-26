@@ -20,7 +20,7 @@ var config = { //Can be configured in window, don't have to change the file ever
     selectedTheme: 0, //0 = Dark Theme, 1 = Light Theme
     autoRotate: false, //Whether to rotate through games automatically
     selectedGame: 0, //Controls selected game (0 = first game selected, 1 = 2nd, ect)
-    requestSpeed: 25, //Number of seconds in between requests, lowering this may result in throttling.
+    requestSpeed: 45, //Number of seconds in between requests, lowering this may result in throttling.
     //Increase the value if you experience throttling errors
     useProxy: true, //If true, uses the CORS-Anywhere proxy, which adds cors headers to any resouce, such as Roblox APIs
     proxyUrl: "https://cors-anywhere.herokuapp.com/", //Proxy Url
@@ -322,15 +322,15 @@ function updateDataFrom(array,url,mode) { //Grab data for a specific mode
         console.log("A error occured: "+e);
         if (alCount<=0) {
             if (!config.useProxy) {
-                alert("Due to CORS Error, the appropriate APIs could not be fetched. " +
+                console.log("Due to CORS Error, the appropriate APIs could not be fetched. " +
                 "Since 'Use Proxy' is disabled, "+appName+"'s Requests were blocked by your browser. "+ 
                 "Enable the proxy to allow requests.")
-            } else if (config.proxyUrl!=="https://cors.herokuapp.com/") {
-                alert("Due to CORS Error, the appropriate APIs could not be fetched. "+ 
+            } else if (config.proxyUrl!=="https://cors-anywhere.herokuapp.com/") {
+                console.log("Due to CORS Error, the appropriate APIs could not be fetched. "+ 
                 "'Use Proxy' is enabled, so you likely modified the proxy url. "+ 
                 "The proxy url you provided does not add a CORS header, which is required for your browser.")
             } else {
-                alert("Due to a request error, the appropriate APIs could not be fetched. "+
+                console.log("Due to a request error, the appropriate APIs could not be fetched. "+
                 "This is most likely due to throttling. It is recommended that you increase the "+
                 "'RequestSpeed' config value at the top of the script.")
             }
