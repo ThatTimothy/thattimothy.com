@@ -23,7 +23,7 @@ var config = { //Can be configured in window, don't have to change the file ever
     requestSpeed: 45, //Number of seconds in between requests, lowering this may result in throttling.
     //Increase the value if you experience throttling errors
     useProxy: true, //If true, uses the CORS-Anywhere proxy, which adds cors headers to any resouce, such as Roblox APIs
-    proxyUrl: "https://cors-anywhere.herokuapp.com/", //Proxy Url
+    proxyUrl: "https://cors-proxy.htmldriven.com/?url=", //Proxy Url
     //If you don't use it, browsers like chrome will most likely reject the request. 
     //If you want, you can host your own instead and route it through that url
     templateImage: "https://blog.roblox.com/wp-content/uploads/2017/02/island_2.png"
@@ -77,17 +77,12 @@ var colors = {
 }
 
 var themes = [
+    //Add your own if you want
     {
     Name: "Dark Mode",
     backColor: "#333333",
     snormalColor: "#efefef",
     normalColor: "#ffffff",
-    },
-    {
-    Name: "Light Mode",
-    backColor: "#ffffff",
-    snormalColor: "#101010",
-    normalColor: "#000000",
     },
 ]
 
@@ -325,10 +320,6 @@ function updateDataFrom(array,url,mode) { //Grab data for a specific mode
                 console.log("Due to CORS Error, the appropriate APIs could not be fetched. " +
                 "Since 'Use Proxy' is disabled, "+appName+"'s Requests were blocked by your browser. "+ 
                 "Enable the proxy to allow requests.")
-            } else if (config.proxyUrl!=="https://cors-anywhere.herokuapp.com/") {
-                console.log("Due to CORS Error, the appropriate APIs could not be fetched. "+ 
-                "'Use Proxy' is enabled, so you likely modified the proxy url. "+ 
-                "The proxy url you provided does not add a CORS header, which is required for your browser.")
             } else {
                 console.log("Due to a request error, the appropriate APIs could not be fetched. "+
                 "This is most likely due to throttling. It is recommended that you increase the "+
