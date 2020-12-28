@@ -23,7 +23,7 @@ var config = { //Can be configured in window, don't have to change the file ever
     requestSpeed: 45, //Number of seconds in between requests, lowering this may result in throttling.
     //Increase the value if you experience throttling errors
     useProxy: true, //If true, uses the CORS-Anywhere proxy, which adds cors headers to any resouce, such as Roblox APIs
-    proxyUrl: "https://thingproxy.freeboard.io/fetch/", //Proxy Url
+    proxyUrl: "https://api.allorigins.win/get?url=", //Proxy Url
     //If you don't use it, browsers like chrome will most likely reject the request. 
     //If you want, you can host your own instead and route it through that url
     templateImage: "https://blog.roblox.com/wp-content/uploads/2017/02/island_2.png"
@@ -299,7 +299,7 @@ function updateDataFrom(array,url,mode) { //Grab data for a specific mode
     if (!config.useProxy) {//Don't use proxy if not needed
         proxyUrl = "";
     }
-    fetch(proxyUrl + url) //Get the data
+    fetch(proxyUrl + encodeURI(url)) //Get the data
       .then(blob => blob.json())
       .then(data => {
             if (mode==="Search") { //Search for games
