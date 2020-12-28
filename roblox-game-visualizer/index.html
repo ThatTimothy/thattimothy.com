@@ -250,6 +250,8 @@ function createGame(id) {
         }
         games.push(game)
     }
+
+    c = Math.min(c, 0.5);
 }
 
 var hasLoaded = 0;
@@ -707,26 +709,16 @@ function setRotate() {
     config.autoRotate = !config.autoRotate;
 }
 
-var sets = ["selectedTheme", "smartUpdate", "autoRotate", "useProxy"]
+var sets = ["smartUpdate", "autoRotate", "useProxy"]
 function generateFixedUrl() {
     var fullUrl = window.location.href
     var qPos = fullUrl.indexOf("?");
     if (qPos<0) {
         qPos = fullUrl.length
     }
-    var newUrl = fullUrl.replace(fullUrl.substring(qPos,fullUrl.length),"")
-    var gameData = [];
-    for (var x = 0;x<games.length;x++) {
-        gameData.push(games[x].id);
-    }
-    var data = {};
-    for (var s = 0; s < sets.length; s++) {
-        const tS = sets[s];
-        const cV = config[tS];
-        data[tS] = cV;
-    }
-    data.gameData = gameData;
-    return newUrl+"?"+JSON.stringify(data)
+    var newUrl = fullUrl.substring(0, qPos)
+
+    return newUrl
 }
 
 function setReset() {
@@ -755,13 +747,32 @@ function convertUrl(url,obj) {
     }
 }
 
+function updateUrl() {
+    let base = generateFixedUrl()
+    let gamesAsString = ""
+    for (let i = 0; i < games.length; i++) {
+        const element = games[i];
+        if (gamesAsString === "") {
+            gamesAsString = "games=" + element.id
+        } else {
+            gamesAsString += "," + element.id
+        }
+    }
+    
+    let fullUrl = base + "?" + gamesAsString
+    
+    if (window.history.replaceState) {
+        window.history.replaceState({path:fullUrl},'', fullUrl);
+    }
+}
+
 function addGame() {
     var textBox = document.getElementById("gameAddI")
     var obj = document.getElementById("gameAddH")
     var obj2 = document.getElementById("gameAddH2")
     if (textBox && obj && obj2) {
         obj2.innerHTML = `Copy the "universeId" from the link below and paste it into the "Input Universe Id" box.`
-        convertUrl(textBox.value,obj)
+        convertUrl(textBox.value, obj)
     }
 }
 
@@ -769,7 +780,7 @@ function addGameId() {
     var textBox = document.getElementById("gameAddI2")
     if (textBox) {
         createGame(textBox.value)
-        setReset();
+        updateUrl();
     }
 }
 
@@ -790,9 +801,19 @@ function addTerms() {
     if (searchGameResult) {
         if (searchGameResult.universeId) {
             createGame(searchGameResult.universeId);
-            setReset()
+            updateUrl()
         }
     }
+}
+
+function parseQuery(queryString) {
+    var query = {};
+    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
 }
 
 function loadDataFromUrl() {
@@ -800,25 +821,18 @@ function loadDataFromUrl() {
     var qPos = fullUrl.indexOf("?");
     if (qPos>=0) {
         var newUrl = decodeURI(fullUrl.replace(fullUrl.substring(0,fullUrl.indexOf("?")+1),""))
-        var d = JSON.parse(newUrl);
+        var d = parseQuery(newUrl)
         if (d) {
-            for (var s = 0; s < sets.length; s++) {
-                const tS = sets[s];
-                const dV = d[tS];
-                if (dV !== undefined) {
-                    config[tS] = dV;
-                } else {
-                    alert("Your link format incorrect (missing "+tS+" value), " +
-                    "please use the 'Update Stats' button in settings to fix it.")
+            if (d.games) {
+                let split = d.games.split(",")
+                for (let index = 0; index < split.length; index++) {
+                    createGame(split[index])
                 }
-            }
-            for (var x = 0;x<d.gameData.length;x++) {
-                createGame(d.gameData[x])
             }
         }
         return true;
-    } else{
-        return false;
+    } else {
+        return true;
     }
 }
 
@@ -833,7 +847,6 @@ function getSort(nam) {
             setInterval(function() {
                 if (sortsResult && db) {
                     db = false
-                    console.log(sortsResult);
                     games = [];
                     for (var r=0;r<sortsResult.games.length;r++) {
                         var tR = sortsResult.games[r]
@@ -845,9 +858,10 @@ function getSort(nam) {
                             }
                         }
                     }
-                    setReset();
+                    updateUrl();
+                    window.reload()
                 }
-            },100)
+            }, 100)
         } else {
             alert("Please input a NUMBER between 1 and 50")
         }
@@ -910,13 +924,13 @@ $(document).ready(function(){
             keyDownManage(event);
         });
         $("body").keyup(function(event){ 
-        keyUpManage(event);
+            keyUpManage(event);
         });
         $("div").keydown(function(event){ 
             keyDownManage(event);
         });
         $("div").keyup(function(event){ 
-        keyUpManage(event);
+            keyUpManage(event);
         });
     }
 });
