@@ -299,7 +299,7 @@ function updateDataFrom(array,url,mode) { //Grab data for a specific mode
     if (!config.useProxy) {//Don't use proxy if not needed
         proxyUrl = "";
     }
-    fetch(proxyUrl + encodeURI(url)) //Get the data
+    fetch(proxyUrl + url) //Get the data
       .then(blob => blob.json())
       .then(data => {
             if (mode==="Search") { //Search for games
