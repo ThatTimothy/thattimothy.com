@@ -842,7 +842,7 @@ function getSort(nam) {
         if (parseInt(numI.value)) {
             var amtToGet = parseInt(numI.value)
             var db = true;
-            var goTo = "https://games.roblox.com/v1/games/list?model.sortToken="
+            var goTo = "https://games.roblox.com/v1/games/list?model"
             updateDataFrom(false,goTo,"SortResults")
             setInterval(function() {
                 if (sortsResult && db) {
@@ -859,11 +859,11 @@ function getSort(nam) {
                         }
                     }
                     updateUrl();
-                    window.reload()
+                    location.reload();
                 }
             }, 100)
         } else {
-            alert("Please input a NUMBER between 1 and 50")
+            alert("Please input a NUMBER between 1 and 40")
         }
     }
 }
@@ -1249,12 +1249,8 @@ hr {
                     <hr>
 
 
-                    <h1 class="setthh">Sorts</h1>
+                    <h1 class="setthh">Popular</h1>
                     <p class="sett">Number To Display (1-40):</p> <input id = "gameSort" class="sett" type="text">
-                    <a class="sett" href="https://games.roblox.com/v1/games/sorts?model.gameSortsContext=GamesDefaultSorts" 
-                    target="_blank">Available Sort Tokens</a>
-                    <br>
-                    <p class="sett">Sort Token:</p> <input id = "gameSort2" class="sett" type="text">
                     <button class="settb" onclick="getSort()">Get Results</button>
                     <hr>    
                 </div>
