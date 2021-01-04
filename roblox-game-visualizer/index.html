@@ -17,7 +17,6 @@
 var config = { //Can be configured in window, don't have to change the file everytime
     smartUpdate: true, //If true, updates only the selected game
     //(Will only use one request per url, instead of one for each game)
-    selectedTheme: 0, //0 = Dark Theme, 1 = Light Theme
     autoRotate: false, //Whether to rotate through games automatically
     selectedGame: 0, //Controls selected game (0 = first game selected, 1 = 2nd, ect)
     requestSpeed: 45, //Number of seconds in between requests, lowering this may result in throttling.
@@ -77,7 +76,7 @@ var colors = {
 }
 
 var themes = [
-    //Add your own if you want
+    //Change if you want
     {
     Name: "Dark Mode",
     backColor: "#333333",
@@ -94,7 +93,6 @@ var showStuff = "visible";
 
 var searchResult;
 var searchCreator;
-var searchGameResult;
 
 var sortsResult;
 
@@ -215,9 +213,6 @@ function slotsFor(canvas, load, val, extra, offset) {
             offset+=commabuffer;
         }
     }
-    //offset+=extrabuffer;
-    //ctx.fillText(extra, offset,0)
-    //offset+=ctx.measureText(extra+" ").width
     canv.style.visibility = showStuff;
     return offset;
 }
@@ -251,7 +246,7 @@ function createGame(id) {
         games.push(game)
     }
 
-    c = Math.min(c, 0.5);
+    c = Math.min(c, 0.05);
 }
 
 var hasLoaded = 0;
@@ -424,12 +419,14 @@ var mx = -1;
 var my = -1;
 
 var aa = 0;
-var setPb = 100;
-var setbActive = false;
+var setbActive = true;
 var setbup = false;
 var fS = 0.125;
+
+var sresultButton, allReset
+
 function doAnimation() {
-    var t = themes[config.selectedTheme];
+    var t = themes[0];
     backColor = t.backColor;
     normalColor = t.normalColor;
     snormalColor = t.snormalColor;
@@ -453,17 +450,19 @@ function doAnimation() {
     var setdiv = document.getElementById("setdiv")
     var setb = document.getElementById("setb")
         const size = 25;
-    var themeSet = document.getElementById("themeSet")
     var smartSet = document.getElementById("smartSet")
     var gameList = document.getElementById("gamelist")
     var sresultList = document.getElementById("gameAddS4")
-    var sresultButton = document.getElementById("gameAddS5")
+    sresultButton = document.getElementById("gameAddS5")
     var useProxb = document.getElementById("proxySet")
     var rotateb = document.getElementById("rotateSet")
-    var allReset = document.getElementById("removeAll")
+    allReset = document.getElementById("removeAll")
+    var game_search_options = document.getElementById("game_search_options")
     var loadedheader = document.getElementById("loadedheader")
+    var bigh = document.getElementById("bigh")
     var slideSpeed = 2;
-    if (maindiv && setdiv && setb && themeSet && smartSet && gameList && useProxb && rotateb && allReset && loadedheader) {
+
+    if (maindiv && setdiv && setb && sresultButton && smartSet && gameList && useProxb && rotateb && allReset && loadedheader) {
         var eSize = 50;
         var settingStuff = document.getElementsByClassName("sett")
         for (var s = 0; s < settingStuff.length; s++) {
@@ -486,33 +485,18 @@ function doAnimation() {
         }
         //Longest if statement ever, can't really make it shorter
         if (setbActive) {
-            document.body.style.overflowY = "scroll";
-            setdiv.style.top = "0px";
-            setPb = Math.max(75, setPb-slideSpeed)
+            maindiv.style.display = "none"
+            setdiv.style.display = ""
             setbup = false;
         } else {
-            if (!setbup) {
-                setbup = true;
-                window.scrollTo(0, 0);
-            }
-            setdiv.style.top = "-1000000px";
-            document.body.style.overflowY = "visible";
-            setPb = Math.min(setPb+slideSpeed,100)
+            maindiv.style.display = ""
+            setdiv.style.display = "none"
         }
         var scrollBarBuffer = 15;
-        setdiv.style.left = (setPb/100) * window.innerWidth + "px";
-        setdiv.style.width = (25/100) * window.innerWidth - scrollBarBuffer + "px";
         
         if (! ($(document).height() - $(window).height() >= 2) || setbActive) {
             scrollBarBuffer = 0;
         }
-
-        setb.style.left = (setPb/100) * window.innerWidth - size - scrollBarBuffer + "px";
-        maindiv.style.width = (setPb/100) * window.innerWidth + "px";
-
-        themeSet.innerHTML = themes[config.selectedTheme].Name;
-        themeSet.style.color = normalColor;
-        themeSet.style.backgroundColor = backColor;
 
         var active = "On"
         if (!config.smartUpdate) {
@@ -551,38 +535,29 @@ function doAnimation() {
                 }
             }
         }
-        allReset.style.visibility = "visible";
         loadedheader.innerHTML = "Loaded Games ("+gameCount+")"
         if (!gam) {
             gam = "No Games Are Currently Loaded"
-            allReset.style.visibility = "hidden";
         }
         gameList.innerHTML = gam;
 
         if (searchResult) {
-            var tResult;
-            for (var r=0;r<searchResult.games.length;r++) {
+            if (game_search_options.size > 0) {
+                return
+            }
+            for (var r=0; r < searchResult.games.length; r++) {
                 var tR = searchResult.games[r]
-                if (searchCreator && searchCreator!=="") {
-                    if (tR.creatorName.toLowerCase()===searchCreator.toLowerCase()) {
-                        tResult = tR;
-                        break;
-                    }
-                } else {
-                    tResult = tR;
-                    break;
-                }
+                game_search_options.add(new Option(tR.name + " - " + tR.creatorName, ""));
             }
-            searchGameResult = tResult;
-            if (tResult) {
-                sresultList.innerHTML = "Result: '"+tResult.name+"' Created By '"+tResult.creatorName+"' (uI: "+tResult.universeId+")"
-                sresultList.style.visibility = "visible"
-                sresultButton.style.visibility = "visible"
-            } else {
-                sresultList.innerHTML = "No Results Found. Try a broader search?"
-                sresultList.style.visibility = "visible"
-                sresultButton.style.visibility = "hidden"
-            }
+            game_search_options.size = 5;
+            game_search_options.style.display = ""
+            sresultButton.style.display = ""
+            allReset.style.display = "none"
+        }
+
+        if (bigh) {
+            bigh.style.fontSize = (eachSize*(1.25)).toString() + "px";
+            bigh.style.color = normalColor;
         }
     }
 
@@ -598,26 +573,14 @@ function doAnimation() {
             }
         }
     }
-    var bigh = document.getElementById("bigh")
-    var bigh2 = document.getElementById("bigh2")
+
     if (setb) {
         setb.style.color = normalColor;
         setb.style.fontSize = size-5 + "px";
         setb.style.height = size + "px";
         setb.style.width = size + "px";
     }
-    if (bigh && bigh2) {
-        bigh.style.fontSize = (eachSize*(1.25)).toString() + "px";
-        bigh.style.color = normalColor;
-        bigh2.style.fontSize = (eachSize*(1.25)).toString() + "px";
-        bigh2.style.color = normalColor;
-        if (games.length===0) {
-            bigh2.innerHTML = "No Games Have Been Loaded Yet! Use the gear icon on the top right to add some!"
-        } else {
-            bigh2.innerHTML = ""
-            bigh2.style.visibility = "hidden";
-        }
-    }
+
     var cc = 0;
     for (var key =0; key<games.length; key++) {
         var game = games[key];
@@ -687,16 +650,6 @@ function setbclick() {
     setbActive = !setbActive;
 }
 
-function setTheme() {
-    alert("No other themes found")
-    return;
-
-    // config.selectedTheme++;
-    // if (!themes[config.selectedTheme]) {
-    //     config.selectedTheme = 0;
-    // }
-}
-
 function setSmart(){
     config.smartUpdate = !config.smartUpdate
 }
@@ -764,6 +717,8 @@ function updateUrl() {
     if (window.history.replaceState) {
         window.history.replaceState({path:fullUrl},'', fullUrl);
     }
+
+    setbActive = false
 }
 
 function addGame() {
@@ -788,20 +743,32 @@ var searchUrl = "https://games.roblox.com/v1/games/list?model.keyword="
 function searchTerms() {
     searchResult = false;
     var sI = document.getElementById("gameAddS1")
-    var sI2 = document.getElementById("gameAddS2")
-    if (sI && sI2) {
-        updateDataFrom("JustDo",searchUrl+sI.value,"Search")
+    if (sI) {
+        updateDataFrom("JustDo", searchUrl + sI.value, "Search")
         sI.value = ""
-        searchCreator = sI2.value
-        sI2.value = ""
     }
 }
 
 function addTerms() {
-    if (searchGameResult) {
-        if (searchGameResult.universeId) {
-            createGame(searchGameResult.universeId);
-            updateUrl()
+    if (searchResult) {
+        if (game_search_options.size > 0) {
+            let id = parseInt(searchResult.games[game_search_options.selectedIndex].universeId);
+            if (id) {
+                createGame(id)
+                updateUrl()
+                searchResult = null;
+
+                var i, L = game_search_options.options.length - 1;
+                for(i = L; i >= 0; i--) {
+                    game_search_options.remove(i);
+                }
+
+                game_search_options.size = 0;
+
+                game_search_options.style.display = "none"
+                sresultButton.style.display = "none"
+                allReset.style.display = ""
+            }
         }
     }
 }
@@ -827,6 +794,7 @@ function loadDataFromUrl() {
                 let split = d.games.split(",")
                 for (let index = 0; index < split.length; index++) {
                     createGame(split[index])
+                    setbActive = false
                 }
             }
         }
@@ -837,35 +805,28 @@ function loadDataFromUrl() {
 }
 
 function getSort(nam) {
-    var numI = document.getElementById("gameSort")
-    if (numI) {
-        if (parseInt(numI.value)) {
-            var amtToGet = parseInt(numI.value)
-            var db = true;
-            var goTo = "https://games.roblox.com/v1/games/list?model"
-            updateDataFrom(false,goTo,"SortResults")
-            setInterval(function() {
-                if (sortsResult && db) {
-                    db = false
-                    games = [];
-                    for (var r=0;r<sortsResult.games.length;r++) {
-                        var tR = sortsResult.games[r]
-                        if (tR) {
-                            if (r<amtToGet) {
-                                createGame(tR.universeId);
-                            } else {
-                                break;
-                            }
-                        }
+    var amtToGet = 40
+    var db = true;
+    var goTo = "https://games.roblox.com/v1/games/list?model"
+    updateDataFrom(false,goTo,"SortResults")
+    setInterval(function() {
+        if (sortsResult && db) {
+            db = false
+            games = [];
+            for (var r=0;r<sortsResult.games.length;r++) {
+                var tR = sortsResult.games[r]
+                if (tR) {
+                    if (r<amtToGet) {
+                        createGame(tR.universeId);
+                    } else {
+                        break;
                     }
-                    updateUrl();
-                    location.reload();
                 }
-            }, 100)
-        } else {
-            alert("Please input a NUMBER between 1 and 40")
+            }
+            updateUrl();
+            location.reload();
         }
-    }
+    }, 100)
 }
 
 function redirectToApi(num) {
@@ -1079,7 +1040,7 @@ button:focus {
 body {
     background-color: "#777777";
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: visible;
     text-align: center;
 }
 
@@ -1092,11 +1053,9 @@ body {
 }
 
 #setdiv {
-    background: rgba(125,125,125,0.5);
-    width: 25%;
-    position: absolute;
-    left: 100%;
+    background: transparent;
     top: 0%;
+    z-index: 5;
 }
 
 #seth {
@@ -1104,6 +1063,7 @@ body {
 }
 
 .setthh {
+    color: rgb(255, 255, 255);
     opacity: 1;
     border: none;
     line-height: 0px;
@@ -1111,14 +1071,15 @@ body {
 }
 
 .sett {
+    color: rgb(255, 255, 255);
     opacity: 1;
-    border: none;
     display: inline-block;
     line-height: normal;
 }
 .settb {
     opacity: 1;
-    background: #aaaaaa;
+    color: rgb(255, 255, 255);
+    background: #194372;
     border: none;
     display: inline-block;
     line-height: normal;
@@ -1130,6 +1091,7 @@ body {
     position: relative;
     top: 0%;
     left: 100%;
+    transform: translate(-100%, 0%);
     position: absolute;
     background-color: rgba(125,125,125,0);
     color: white;
@@ -1141,6 +1103,11 @@ body {
 
 hr {
     border:1px dashed #000000;
+}
+
+input {
+    background-color: #1a1a1a;
+    border: 2px solid #000000;
 }
     </style>
 </head>
@@ -1199,59 +1166,71 @@ hr {
                     </div>
                 </div>
                 <button id="setb" onclick="setbclick()">⚙</button>
-                <div id="setdiv">
-                    <h1 class="sett" id="seth">Settings</h1>
+                <div id="setdiv" style="display: none;">
+                    <h1 class="sett" id="seth" style="margin: 0px;">Configure</h1>
+
+                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                    <h1 class="setthh">Add Games</h1>
+
+                    <p class="sett" style="margin-bottom: 0px;">Add by the game's universe id:  <br> (Not roblox.com/games/id. That id is the place id): </p> 
+                    <br>
+                    <input id = "gameAddI2" class="sett" type="text">
+                    <button id= "gameAddB2" class="settb" onclick="addGameId()">➔</button>
+
+                    <br>
+                    <br>
+
+                    <p class="sett" style="margin: 0px;">Add by the game's name: </p>
+
+                    <hr style="height: 0px; visibility:hidden; margin: 0px;"/>
+
+                    <input id = "gameAddS1" class="sett" type="text">
+                    <button id= "gameAddS3" class="settb" onclick="searchTerms()">➔</button>
+                    
+                    <hr style="height: 10px; visibility:hidden; margin: 0px;"/>
+                    <button id= "removeAll" class="settb" onclick="removeAllGames()">Remove All Games</button>
+                    <select id="game_search_options"  style="display: none" size=0>
+                    </select>
+                    <br>
+                    <button id= "gameAddS5" class="settb" onclick="addTerms()" style="display: none">Add Selected ➔</button>
+
                     <br>
                     <h1 class="setthh" id="loadedheader">Loaded Games</h1>
                     <p id ="gamelist" class="sett"></p>
-                    <br>
-                    <button id= "removeAll" class="settb" onclick="removeAllGames()">Remove All</button>
                     <hr>
-
-
-                    <h1 class="setthh">Add Game By Name & Creator</h1>
-                    <p class="sett">Input Game Name (Doesn't have to be full): </p> 
+                    <h1 class="setthh" style="margin-top: 20px">Popular</h1>
+                    <button class="settb" onclick="getSort()">Show Top 40 Games</button>
                     <br>
-                    <input id = "gameAddS1" class="sett" type="text">
-                    <p class="sett">Game Creator (Name of group or user creator, leave blank for 1st result): </p> 
-                    <input id = "gameAddS2" class="sett" type="text">
-                    <button id= "gameAddS3" class="settb" onclick="searchTerms()">Search</button>
-                    <br>
-                    <p id="gameAddS4" class="sett" style="visibility: hidden">Result here</p>
-                    <button id= "gameAddS5" class="settb" onclick="addTerms()" style="visibility: hidden">Add Result</button>
                     <hr>
+                    <h1 class="setthh">Customization</h1>
+                    <p class="sett" style="margin: 0px; margin-top: 10px;" >Auto Rotate<br>(Rotate through slowly): </p> <button id="rotateSet" class="settb" onclick="setRotate()">Loading...</button>
+                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                    <p class="sett" style="margin: 0px;" >Smart Update: </p> <button id="smartSet" class="settb" onclick="setSmart()">Loading...</button>
+                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                    <p class="sett" style="margin: 0px;" >Smart Update updates data every cycle for only the game currently visible.</p> 
+                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                    <p class="sett" style="margin: 0px;" >Use CORS Proxy: </p> <button id="proxySet" class="settb" onclick="setProxy()">Loading...</button>
+                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                    <p class="sett" style="margin: 0px;" >Only disable this if you understand what it means.</p> 
+                    <br>
+                    <button id="resetSet" class="settb" onclick="setReset()">Update Stats</button>
 
+                </div>
+                <div id="fake-setdiv" style="display: none; position: absolute;">
+
+                    <br>
+                    <br>
 
                     <h1 class="setthh">Add Game By Url (More Steps)</h1>
                     <p class="sett">Input Game Url To Get Universe Id <br> (Ex: www.roblox.com/games/1689414409/Roblox-Uno): </p> 
+                    <br>
                     <input id = "gameAddI" class="sett" type="text">
                     <button id= "gameAddB" class="settb" onclick="addGame()">Get Game Universe Id</button>
                     <p id = "gameAddH2" class="sett"></p>
                     <a id = "gameAddH" class="sett" target="_blank"></a>
                     <br>
-                    <p class="sett">Input Universe Id <br> (Not roblox.com/games/id. That id is the place id): </p> 
-                    <input id = "gameAddI2" class="sett" type="text">
-                    <button id= "gameAddB2" class="settb" onclick="addGameId()">Add Game By Universe Id</button>
-                    <hr>
 
 
-                    <h1 class="setthh">Customization</h1>
-                    <p class="sett">Selected Theme: </p> <button id="themeSet" class="settb" onclick="setTheme()">Loading...</button>
-                    <br>
-                    <p class="sett">Auto Rotate<br>(Rotate through slowly): </p> <button id="rotateSet" class="settb" onclick="setRotate()">Loading...</button>
-                    <br>
-                    <p class="sett">Use CORS Proxy: </p> <button id="proxySet" class="settb" onclick="setProxy()">Loading...</button>
-                    <br>
-                    <p class="sett">Smart Update: </p> <button id="smartSet" class="settb" onclick="setSmart()">Loading...</button>
-                    <p class="sett">Smart Update updates data for only the game currently visible. 
-                        It does not affect the fact that all games will load on startup.</p> 
-                    <button id="resetSet" class="settb" onclick="setReset()">Update Stats</button>
-                    <hr>
-
-
-                    <h1 class="setthh">Popular</h1>
-                    <p class="sett">Number To Display (1-40):</p> <input id = "gameSort" class="sett" type="text">
-                    <button class="settb" onclick="getSort()">Get Results</button>
                     <hr>    
                 </div>
             </div>
