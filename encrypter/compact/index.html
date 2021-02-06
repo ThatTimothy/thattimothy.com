@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Encrypter</title>
+
+        <!-- <script src="../load_essentials.js"></script> -->
+        
+        <!-- <link rel="stylesheet" href="css.css"> -->
+        <!-- <script src=seedrandom.js></script> -->
+        <script>
+            /*
+            Copyright 2019 David Bau.
+
+            Permission is hereby granted, free of charge, to any person obtaining
+            a copy of this software and associated documentation files (the
+            "Software"), to deal in the Software without restriction, including
+            without limitation the rights to use, copy, modify, merge, publish,
+            distribute, sublicense, and/or sell copies of the Software, and to
+            permit persons to whom the Software is furnished to do so, subject to
+            the following conditions:
+
+            The above copyright notice and this permission notice shall be
+            included in all copies or substantial portions of the Software.
+
+            THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+            EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+            MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+            IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+            CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+            TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+            SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+            */
+
+            (function (global, pool, math) {
+            //
+            // The following constants are related to IEEE 754 limits.
+            //
+
+            var width = 256,        // each RC4 output is 0 <= x < 256
+                chunks = 6,         // at least six RC4 outputs for each double
+                digits = 52,        // there are 52 significant digits in a double
+                rngname = 'random', // rngname: name for Math.random and Math.seedrandom
+                startdenom = math.pow(width, chunks),
+                significance = math.pow(2, digits),
+                overflow = significance * 2,
+                mask = width - 1,
+                nodecrypto;         // node.js crypto module, initialized at the bottom.
+
+            //
+            // seedrandom()
+            // This is the seedrandom function described above.
+            //
+            function seedrandom(seed, options, callback) {
+            var key = [];
+            options = (options == true) ? { entropy: true } : (options || {});
+
+            // Flatten the seed string or build one from local entropy if needed.
+            var shortseed = mixkey(flatten(
+                options.entropy ? [seed, tostring(pool)] :
+                (seed == null) ? autoseed() : seed, 3), key);
+
+            // Use the seed to initialize an ARC4 generator.
+            var arc4 = new ARC4(key);
+
+            // This function returns a random double in [0, 1) that contains
+            // randomness in every bit of the mantissa of the IEEE 754 value.
+            var prng = function() {
+                var n = arc4.g(chunks),             // Start with a numerator n < 2 ^ 48
+                    d = startdenom,                 //   and denominator d = 2 ^ 48.
+                    x = 0;                          //   and no 'extra last byte'.
+                while (n < significance) {          // Fill up all significant digits by
+                n = (n + x) * width;              //   shifting numerator and
+                d *= width;                       //   denominator and generating a
+                x = arc4.g(1);                    //   new least-significant-byte.
+                }
+                while (n >= overflow) {             // To avoid rounding up, before adding
+                n /= 2;                           //   last byte, shift everything
+                d /= 2;                           //   right using integer math until
+                x >>>= 1;                         //   we have exactly the desired bits.
+                }
+                return (n + x) / d;                 // Form the number within [0, 1).
+            };
+
+            prng.int32 = function() { return arc4.g(4) | 0; }
+            prng.quick = function() { return arc4.g(4) / 0x100000000; }
+            prng.double = prng;
+
+            // Mix the randomness into accumulated entropy.
+            mixkey(tostring(arc4.S), pool);
+
+            // Calling convention: what to return as a function of prng, seed, is_math.
+            return (options.pass || callback ||
+                function(prng, seed, is_math_call, state) {
+                    if (state) {
+                    // Load the arc4 state from the given state if it has an S array.
+                    if (state.S) { copy(state, arc4); }
+                    // Only provide the .state method if requested via options.state.
+                    prng.state = function() { return copy(arc4, {}); }
+                    }
+
+                    // If called as a method of Math (Math.seedrandom()), mutate
+                    // Math.random because that is how seedrandom.js has worked since v1.0.
+                    if (is_math_call) { math[rngname] = prng; return seed; }
+
+                    // Otherwise, it is a newer calling convention, so return the
+                    // prng directly.
+                    else return prng;
+                })(
+            prng,
+            shortseed,
+            'global' in options ? options.global : (this == math),
+            options.state);
+            }
+
+            //
+            // ARC4
+            //
+            // An ARC4 implementation.  The constructor takes a key in the form of
+            // an array of at most (width) integers that should be 0 <= x < (width).
+            //
+            // The g(count) method returns a pseudorandom integer that concatenates
+            // the next (count) outputs from ARC4.  Its return value is a number x
+            // that is in the range 0 <= x < (width ^ count).
+            //
+            function ARC4(key) {
+            var t, keylen = key.length,
+                me = this, i = 0, j = me.i = me.j = 0, s = me.S = [];
+
+            // The empty key [] is treated as [0].
+            if (!keylen) { key = [keylen++]; }
+
+            // Set up S using the standard key scheduling algorithm.
+            while (i < width) {
+                s[i] = i++;
+            }
+            for (i = 0; i < width; i++) {
+                s[i] = s[j = mask & (j + key[i % keylen] + (t = s[i]))];
+                s[j] = t;
+            }
+
+            // The "g" method returns the next (count) outputs as one number.
+            (me.g = function(count) {
+                // Using instance members instead of closure state nearly doubles speed.
+                var t, r = 0,
+                    i = me.i, j = me.j, s = me.S;
+                while (count--) {
+                t = s[i = mask & (i + 1)];
+                r = r * width + s[mask & ((s[i] = s[j = mask & (j + t)]) + (s[j] = t))];
+                }
+                me.i = i; me.j = j;
+                return r;
+                // For robust unpredictability, the function call below automatically
+                // discards an initial batch of values.  This is called RC4-drop[256].
+                // See http://google.com/search?q=rsa+fluhrer+response&btnI
+            })(width);
+            }
+
+            //
+            // copy()
+            // Copies internal state of ARC4 to or from a plain object.
+            //
+            function copy(f, t) {
+            t.i = f.i;
+            t.j = f.j;
+            t.S = f.S.slice();
+            return t;
+            };
+
+            //
+            // flatten()
+            // Converts an object tree to nested arrays of strings.
+            //
+            function flatten(obj, depth) {
+            var result = [], typ = (typeof obj), prop;
+            if (depth && typ == 'object') {
+                for (prop in obj) {
+                try { result.push(flatten(obj[prop], depth - 1)); } catch (e) {}
+                }
+            }
+            return (result.length ? result : typ == 'string' ? obj : obj + '\0');
+            }
+
+            //
+            // mixkey()
+            // Mixes a string seed into a key that is an array of integers, and
+            // returns a shortened string seed that is equivalent to the result key.
+            //
+            function mixkey(seed, key) {
+            var stringseed = seed + '', smear, j = 0;
+            while (j < stringseed.length) {
+                key[mask & j] =
+                mask & ((smear ^= key[mask & j] * 19) + stringseed.charCodeAt(j++));
+            }
+            return tostring(key);
+            }
+
+            //
+            // autoseed()
+            // Returns an object for autoseeding, using window.crypto and Node crypto
+            // module if available.
+            //
+            function autoseed() {
+            try {
+                var out;
+                if (nodecrypto && (out = nodecrypto.randomBytes)) {
+                // The use of 'out' to remember randomBytes makes tight minified code.
+                out = out(width);
+                } else {
+                out = new Uint8Array(width);
+                (global.crypto || global.msCrypto).getRandomValues(out);
+                }
+                return tostring(out);
+            } catch (e) {
+                var browser = global.navigator,
+                    plugins = browser && browser.plugins;
+                return [+new Date, global, plugins, global.screen, tostring(pool)];
+            }
+            }
+
+            //
+            // tostring()
+            // Converts an array of charcodes to a string
+            //
+            function tostring(a) {
+            return String.fromCharCode.apply(0, a);
+            }
+
+            //
+            // When seedrandom.js is loaded, we immediately mix a few bits
+            // from the built-in RNG into the entropy pool.  Because we do
+            // not want to interfere with deterministic PRNG state later,
+            // seedrandom will not call math.random on its own again after
+            // initialization.
+            //
+            mixkey(math.random(), pool);
+
+            //
+            // Nodejs and AMD support: export the implementation as a module using
+            // either convention.
+            //
+            if ((typeof module) == 'object' && module.exports) {
+            module.exports = seedrandom;
+            // When in node.js, try using crypto package for autoseeding.
+            try {
+                nodecrypto = require('crypto');
+            } catch (ex) {}
+            } else if ((typeof define) == 'function' && define.amd) {
+            define(function() { return seedrandom; });
+            } else {
+            // When included as a plain script, set up Math.seedrandom global.
+            math['seed' + rngname] = seedrandom;
+            }
+
+
+            // End anonymous scope, and pass initial values.
+            })(
+            // global: `self` in browsers (including strict mode and web workers),
+            // otherwise `this` in Node and other environments
+            (typeof self !== 'undefined') ? self : this,
+            [],     // pool: entropy pool starts empty
+            Math    // math: package containing random, pow, and seedrandom
+            );
+
+        </script>
+        <script>
+            let topDiv, contentDiv, hint, hint2, activateButton, headerPart2, keyword, outputHint, output, input, clipboardCopy, mode
+            let pairing = "" //all symbols, letters, and numbers
+            function onLoad() {
+                topDiv = document.getElementById('top')
+                contentDiv = document.getElementById('content')
+                hint = document.getElementById('hint')
+                hint2 = document.getElementById('hint2')
+                activateButton = document.getElementById('activateButton')
+                headerPart2 = document.getElementById('headerPart2')
+                keyword = document.getElementById('keyword')
+                output = document.getElementById('output')
+                outputHint = document.getElementById('outputHint')
+                input = document.getElementById('input')
+                clipboardCopy = document.getElementById('clipboardCopy')
+                for (let i = 33; i <= 126; i++) {
+                    pairing += String.fromCharCode(i)
+                }
+
+                changeMenu(0)
+            }
+
+
+            function changeMenu(num) {
+                output.innerText = ""
+                outputHint.innerText = ""
+                input.value = ""
+                clipboardCopy.style.display = "none"
+                mode = num;
+                if (num > 0) {
+                    //Not main menu
+                    topDiv.style.display = "none"
+                    contentDiv.style.display = "block"
+                    if (num === 1) {
+                        //Encode
+                        hint.innerText = "Secret Text → Y/?LGAZ*D]}"
+                        headerPart2.innerText = "The Secret Message"
+                        input.placeholder = "Enter text to encode..."
+                        hint2.innerText = "This should be the message you want to encode, like 'The secret base is at (-573, 338)'"
+                        activateButton.innerText = "Encode Message"
+
+                        activateButton.onclick = encodeInput
+                    } else {
+                        //Decode
+                        hint.innerText = "Y/?LGAZ*D]} → Secret Text"
+                        headerPart2.innerText = "The Encrypted Message"
+                        input.placeholder = "Enter text to decode..."
+                        hint2.innerText = "This should be the garbled message, like 'Y/?LGAZ*D]}'"
+                        activateButton.innerText = "Decode Message"
+
+                        activateButton.onclick = decodeInput
+                    }
+                } else {
+                    //Main menu
+                    topDiv.style.display = "block"
+                    contentDiv.style.display = "none"
+                }
+            }
+
+            function createKeyTable(randomNum) {
+                let available = []
+                for (let i = 0; i < pairing.length; i++) {
+                    available.push(pairing.charAt(i))
+                }
+                let toEncode = []
+                let toDecode = []
+                let randomGen = new Math.seedrandom(randomNum)
+                for (let i = 0; i < pairing.length; i++) {
+                    let toPairWith = pairing[i]
+                    let chosenIndex = Math.floor(randomGen() * available.length)
+                    let chosen = available[chosenIndex]
+                    available.splice(chosenIndex, 1)
+
+                    toEncode[toPairWith] = chosen
+                    toDecode[chosen] = toPairWith
+                }
+
+                return {
+                    toEncode: toEncode,
+                    toDecode: toDecode,
+                }
+            }
+
+            function getXRandoms(key, num) {
+                let newRandomGen = new Math.seedrandom(key.toLowerCase())
+                let values = []
+                let available = []
+                for (let i = 0; i < num; i++) {
+                    values[i] = {
+                        pos: newRandomGen(),
+                        keyTable: Math.floor(newRandomGen() * 1000) / 1000,
+                        case: newRandomGen(),
+                    }
+                    available[i] = i
+                }
+
+                return {
+                    values: values,
+                    available: available,
+                }
+            }
+
+            function clearFields() {
+                clipboardCopy.style.display = "inline"
+            }
+
+            function encodeInput() {
+                if (keyword.value.length === 0) {
+                    alert("Enter a keyword!")
+                    return
+                }
+                if (input.value.length === 0) {
+                    alert("Enter text to encode!")
+                    return
+                }
+
+                let toEncode = input.value.replaceAll(" ","_")
+
+                let randomNums = getXRandoms(keyword.value, toEncode.length)
+                let values = randomNums.values
+                let available = randomNums.available
+
+                let resultant = ""
+                while (available.length > 0) {
+                    let value = values[resultant.length]
+                    let chosenIndex = Math.floor(value.pos * available.length)
+                    let chosen = available.splice(chosenIndex, 1)[0]
+
+                    let newAdd = toEncode.substring(chosen, chosen + 1)
+
+                    let encodeTable = createKeyTable(value.keyTable).toEncode
+                    if (encodeTable[newAdd]) {
+                        newAdd = encodeTable[newAdd]
+                    }
+
+                    if (value.case > 0.3333) {
+                        if (newAdd.toUpperCase() !== newAdd) {
+                            newAdd = newAdd.toUpperCase()
+                        } else if (newAdd.toLowerCase() !== newAdd) {
+                            newAdd = newAdd.toLowerCase()
+                        }
+                    }
+
+                    resultant += newAdd
+                }
+
+                outputHint.innerText = "Encoded Message:"
+                output.innerText = resultant
+                clearFields()
+            }
+
+            function decodeInput() {
+                if (keyword.value.length === 0) {
+                    alert("Enter a keyword!")
+                    return
+                }
+                if (input.value.length === 0) {
+                    alert("Enter text to decode!")
+                    return
+                }
+
+                let toDecode =  input.value
+                let randomNums = getXRandoms(keyword.value, toDecode.length)
+                let values = randomNums.values
+                let available = randomNums.available
+
+                let resultant = []
+                for (let i = 0; i < toDecode.length; i++) {
+                    let value = values[i]
+                    let chosenIndex = Math.floor(value.pos * available.length)
+                    let chosen = available.splice(chosenIndex, 1)[0]
+
+                    let newAdd = toDecode.substring(i, i + 1)
+                    if (value.case > 0.3333) {
+                        if (newAdd.toLowerCase() !== newAdd) {
+                            newAdd = newAdd.toLowerCase()
+                        } else if (newAdd.toUpperCase() !== newAdd) {
+                            newAdd = newAdd.toUpperCase()
+                        }
+                    }
+
+                    let decodeTable = createKeyTable(value.keyTable).toDecode
+                    if (decodeTable[newAdd]) {
+                        newAdd = decodeTable[newAdd]
+                    }
+
+                    if (newAdd === "_") {
+                        newAdd = " "
+                    }
+
+                    resultant[chosen] = newAdd
+                }
+
+                resultant = resultant.join("")
+                outputHint.innerText = "Decoded Message:"
+                output.innerText = resultant
+                clearFields()
+            }
+
+            let clipboardCounter = 0;
+            function copyToClipboard() {
+                window.getSelection().removeAllRanges();
+                let textArea = document.createElement("textarea")
+                textArea.innerText = output.innerText
+                document.body.appendChild(textArea)
+
+                textArea.select()
+                textArea.setSelectionRange(0, 99999); /* For mobile devices */
+                document.execCommand("copy");
+
+                document.body.removeChild(textArea)
+
+                clipboardCopy.innerText = "Copied!"
+                clipboardCounter++;
+                let saved = clipboardCounter;
+                setTimeout(function() {
+                    if (clipboardCounter === saved) {
+                        clipboardCopy.innerText = "Copy to Clipboard"
+                    }
+                }, 3000)
+            }
+        </script>
+    </head>
+    <style>
+        * {
+                padding: 0px;
+                margin: 0px;
+                min-width: 0%;
+                min-height: 0%;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            html {
+                vertical-align: middle;
+                text-align: center;
+            }
+
+            body {
+                background-color: #36393e;
+                min-height: 100vh;
+                min-width: 100%;
+                margin: 0px;
+            }
+
+            button {
+                background-color: #373a3f;
+                color: #ffffff;
+                outline: none;
+                border-top: 2px solid rgba(255,255,255,0.5);
+                border-bottom: 2px solid rgba(0,0,0,0.5);
+                border-left: 2px solid rgba(255,255,255,0.5);
+                border-right: 2px solid rgba(0,0,0,0.5);
+            }
+
+            #top, #content {
+                padding: 20px;
+            }
+
+            .topButton {
+                font-size: 50px;
+                margin: 10px;
+                padding: 10px;
+            }
+
+            #changeMode {
+                margin-bottom: 25px;
+            }
+
+            #hint {
+                font-size: 40px;
+                color: #ffffff;
+                margin-bottom: 20px;
+            }
+
+            .field {
+                background-color: #373a3f;
+                color: #ffffff;
+                font-size: 20px;
+                padding: 10px;
+                border: 2px solid rgb(19, 19, 19);
+                border-radius: 7px;
+            }
+
+            .field::placeholder {
+                color: #ffffff;
+                opacity: 0.95;
+            }
+
+            .info, .smallinfo {
+                color: #ffffff;
+                font-size: 30px;
+                margin: 5px;
+            }
+
+            .smallinfo {
+                font-size: 20px;
+            }
+
+            #headerPart2 {
+                margin-top: 20px;
+            }
+
+            #activateButton {
+                margin-top: 10px;
+                font-size: 50px;
+                padding: 20px;
+            }
+
+            #output {
+                margin-top: 10px;
+                word-break: break-all;
+            }
+
+            #outputHint {
+                margin-top: 20px;
+            }
+
+            #input {
+                width: 50%;
+                min-height: 100px;
+            }
+
+            #clipboardCopy {
+                padding: 10px;
+                font-size: 30px;
+                margin-top: 10px;
+                display: none;
+            }
+
+            #title {
+                object-fit: contain;
+                width: 30%;
+                margin-bottom: 25px;
+            }
+    </style>
+    <body onload="onLoad()">
+        <div id="header"></div>
+    
+        <div id="body">
+            <div id="top">
+                <img id="title" src="title.png" style="display: none;"></img>
+                <br>
+                <button class="topButton" onclick="changeMenu(1)">Encode a message
+                    <p class="smallinfo">Secret Text → Y/?LGAZ*D]}</p>
+                </button>
+                <button class="topButton" onclick="changeMenu(2)">Decode a message
+                    <p class="smallinfo">Y/?LGAZ*D]} → Secret Text</p>
+                </button>
+            </div>
+            <div id="content" style="display:none">
+                <div>
+                    <button id="changeMode" class="topButton" onclick="changeMenu(0)">Change Mode</button>
+                    <p id="hint">Hint text</p>
+                </div>
+
+                <p class="info">Keyword</p>
+                <input id="keyword" class="field" type="text" placeholder="Enter keyword...">
+                <p class="smallinfo">A keyword is used to encode and decode text. It's like a password to translate between encoded (garbled) and regular text.</p>
+                
+                <p id="headerPart2" class="info">The Text</p>
+                <textarea id="input" class="field" placeholder="To exist... or to not exist, that is the question."></textarea>
+                <p id="hint2" class="smallinfo">Helpful info here</p>
+                <button id="activateButton">Do Stuff!</button>
+                <p id="outputHint" class="info"></p>
+                <pre id="output" class="smallinfo"></pre>
+                <button id="clipboardCopy" onclick="copyToClipboard()">Copy To Clipboard</button>
+            </div>
+        </div>
+  
+        <div id="footer"></div>
+    </body>
+</html>
