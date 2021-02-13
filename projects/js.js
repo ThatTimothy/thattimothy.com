@@ -25,11 +25,9 @@ const data = [
 function onPageLoad() {
     let baseContainer = document.getElementById('projectsContainer')
     for (let i = 0; i < data.length; i++) {
-        if (i !== 0) {
-            let line = document.createElement('hr')
-            line.className = "projectSeparator"
-            baseContainer.append(line)
-        }
+        let line = document.createElement('p')
+        line.className = "projectSeparator"
+        baseContainer.append(line)
 
         const project = data[i]
         
@@ -39,11 +37,11 @@ function onPageLoad() {
         let icon = document.createElement('img')
         icon.className = "projectIcon"
         icon.src = project.Icon
-        let n = 100;
+        let n = 5;
         if (project.IconScale) {
             n *= project.IconScale
         }
-        icon.style.height = n + "px"
+        icon.style.height = n + "vw"
 
         let desc = document.createElement('p')
         desc.className = "projectDescription"
