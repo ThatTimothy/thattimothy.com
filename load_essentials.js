@@ -1,5 +1,6 @@
 let loaded = 0;
-let toLoad = 3;
+const toLoad = 3;
+const baseDomain = "https://thattimothy.com"
 
 let headerData;
 let footerData;
@@ -24,7 +25,7 @@ function allLoaded() {
     bodyDiv.style.paddingBottom = "60px";
 }
 
-fetch('../header.html').then(function(response) {
+fetch(baseDomain + '/header.html').then(function(response) {
     response.text().then(function(text) {
         headerData = text;
 
@@ -35,7 +36,7 @@ fetch('../header.html').then(function(response) {
     });
 });
 
-fetch('../footer.html').then(function(response) {
+fetch(baseDomain + '/footer.html').then(function(response) {
     response.text().then(function(text) {
         footerData = text;
 
