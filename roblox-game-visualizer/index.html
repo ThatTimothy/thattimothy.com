@@ -743,6 +743,12 @@ function addGameId() {
     }
 }
 
+function addGameIdKeyDown() {
+    if (event.key === "Enter") {
+        addGameId()
+    }
+}
+
 var searchUrl = "https://games.roblox.com/v1/games/list?model.keyword="
 function searchTerms() {
     searchResult = false;
@@ -750,6 +756,12 @@ function searchTerms() {
     if (sI) {
         updateDataFrom("JustDo", searchUrl + sI.value, "Search")
         sI.value = ""
+    }
+}
+
+function searchTermsKeyDown() {
+    if (event.key === "Enter") {
+        searchTerms()
     }
 }
 
@@ -1118,6 +1130,12 @@ input {
     visibility: visible;
     width: 15%;
 }
+
+input::placeholder {
+    color: #fff;
+    opacity: 0.5;
+    font-size: 14px;
+}
     </style>
 </head>
     <body onload="start()">
@@ -1183,7 +1201,7 @@ input {
 
                     <p class="sett" style="margin-bottom: 0px;">Add by the game's universe id:  <br> (Not roblox.com/games/id. That id is the place id): </p> 
                     <br>
-                    <input id = "gameAddI2" class="sett" type="text">
+                    <input id = "gameAddI2" class="sett" placeholder="Enter a universe id..." onkeydown="addGameIdKeyDown()" type="text">
                     <button id= "gameAddB2" class="settb" onclick="addGameId()">➔</button>
 
                     <br>
@@ -1193,7 +1211,7 @@ input {
 
                     <hr style="height: 0px; visibility:hidden; margin: 0px;"/>
 
-                    <input id = "gameAddS1" class="sett" type="text">
+                    <input id = "gameAddS1" class="sett" placeholder="Search a game's name..." onkeydown="searchTermsKeyDown()" type="text">
                     <button id= "gameAddS3" class="settb" onclick="searchTerms()">➔</button>
                     
                     <hr style="height: 10px; visibility:hidden; margin: 0px;"/>
@@ -1224,23 +1242,6 @@ input {
                     <br>
                     <button id="resetSet" class="settb" onclick="setReset()">Update Stats</button>
 
-                </div>
-                <div id="fake-setdiv" style="display: none; position: absolute;">
-
-                    <br>
-                    <br>
-
-                    <h1 class="setthh">Add Game By Url (More Steps)</h1>
-                    <p class="sett">Input Game Url To Get Universe Id <br> (Ex: www.roblox.com/games/1689414409/Roblox-Uno): </p> 
-                    <br>
-                    <input id = "gameAddI" class="sett" type="text">
-                    <button id= "gameAddB" class="settb" onclick="addGame()">Get Game Universe Id</button>
-                    <p id = "gameAddH2" class="sett"></p>
-                    <a id = "gameAddH" class="sett" target="_blank"></a>
-                    <br>
-
-
-                    <hr>    
                 </div>
             </div>
         </div>
