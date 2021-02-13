@@ -1,11 +1,17 @@
 <html>
     <footer id="footer_contents">
-        <p id="footer_contents_p">
-            Copyright © 2020 <a style="color: rgb(240, 240, 240)" href="https://ThatTimothy.com">ThatTimothy.com</a> - All Rights Reserved
-        </p>
+        <div id="footer_contents_container">
+            <p class="footer_contents_p">Copyright © 2020</p>
+            <a class="footer_contents_p" id="footer_contents_a" style="color: #fff" href="https://ThatTimothy.com">ThatTimothy.com</a>
+            <p class="footer_contents_p"> - All Rights Reserved</p>
+        </div>
     </footer>
 
     <style>
+        body {
+            background-color: #36393e;
+        }
+
         #footer_contents {
             position: absolute;
             bottom: 0px;
@@ -19,14 +25,29 @@
             text-align: center;
         }
 
-        #footer_contents_p {
-            color: #fff;
-            opacity: 0.75;
+        #footer_contents_container {
             position: absolute;
             left: 50%;
-            bottom: 5px;
+            bottom: 0px;
+            margin-bottom: 10px;
             transform: translate(-50%, 0%);
+        }
+
+        .footer_contents_p {
+            display: inline;
+            margin: 0;
+            color: #fff;
+            opacity: 0.7;
             padding: 0px;
+        }
+
+        #footer_contents_a {
+            opacity: 1;
+            transition: opacity 0.25s;
+        }
+        
+        #footer_contents_a:hover {
+            opacity: 0.75;
         }
     </style>
 </html>
