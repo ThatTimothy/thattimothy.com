@@ -647,6 +647,10 @@ function rbf() {
 }
 
 function setbclick() {
+    if (games.length <= 0 && setbActive) {
+        alert("Add games before returning to the main screen!")
+        return
+    }
     setbActive = !setbActive;
 }
 
@@ -1109,6 +1113,11 @@ input {
     background-color: #1a1a1a;
     border: 2px solid #000000;
 }
+
+#titleImage {
+    visibility: visible;
+    width: 15%;
+}
     </style>
 </head>
     <body onload="start()">
@@ -1167,9 +1176,9 @@ input {
                 </div>
                 <button id="setb" onclick="setbclick()">⚙</button>
                 <div id="setdiv" style="display: none;">
-                    <h1 class="sett" id="seth" style="margin: 0px;">Configure</h1>
+                    <img id="titleImage" src="title.png"></img>
 
-                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                    <hr style="height:0px; visibility:hidden; margin: 0px;" />
                     <h1 class="setthh">Add Games</h1>
 
                     <p class="sett" style="margin-bottom: 0px;">Add by the game's universe id:  <br> (Not roblox.com/games/id. That id is the place id): </p> 
