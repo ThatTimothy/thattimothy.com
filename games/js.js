@@ -41,7 +41,7 @@ function onPageLoad() {
         let icon = document.createElement('img')
         icon.className = "projectIcon"
         icon.src = project.Icon
-        icon.style.height = "7vw"
+        icon.style.height = "15vh"
 
         let textDiv = document.createElement('div')
         textDiv.className = "projectTextContainer"

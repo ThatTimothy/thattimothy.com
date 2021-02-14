@@ -37,11 +37,11 @@ function onPageLoad() {
         let icon = document.createElement('img')
         icon.className = "projectIcon"
         icon.src = project.Icon
-        let n = 5;
+        let n = 10;
         if (project.IconScale) {
             n *= project.IconScale
         }
-        icon.style.height = n + "vw"
+        icon.style.height = n + "vh"
 
         let desc = document.createElement('p')
         desc.className = "projectDescription"

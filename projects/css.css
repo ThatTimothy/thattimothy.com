@@ -20,7 +20,7 @@ body {
 }
 
 #projectsContainer {
-    margin: 0 auto;
+    margin: auto auto;
     width: 65%;
 }
 
@@ -37,16 +37,30 @@ body {
     grid-template-columns: auto 1fr auto;
 }
 
+@media screen and (max-width: 1400px) {
+    /* Phone / Tablet Mode */
+    #projectsContainer {
+        width: 85%;
+    }
+    .projectContainer {
+        grid-template-rows: auto 1fr auto;
+        grid-template-columns: 1fr;
+    }
+    .projectSeparator {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+}
+
 .projectIcon {
     display: inline-block;
-    margin: auto 0;
+    margin: auto auto;
 }
 
 .projectDescription {
-    width: 90%;
     font-size: 25px;
     color: #fff;
-    margin: auto 0;
+    margin: auto auto;
     padding: 20px;
 }
 
@@ -57,7 +71,7 @@ body {
     width: fit-content;
     height: fit-content;
     color: #fff;
-    margin: auto 0;
+    margin: auto auto;
 }
 
 .projectOpenButton {
