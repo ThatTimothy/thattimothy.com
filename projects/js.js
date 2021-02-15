@@ -1,4 +1,4 @@
-const baseUrl = "https://thattimothy.com"
+const baseUrl = window.location.origin
 const data = [
     {
         Title: "Roblox Game Visualizer",
@@ -24,7 +24,7 @@ const data = [
         Title: "Ping",
         Description: "Check your internet's ping periodically. Shows a real-time graph of ping history.",
         Icon: baseUrl + "/ping/title.png",
-        IconScale: 1.5,
+        IconScale: 1,
         Redirect: baseUrl + "/ping"
     },
 ]

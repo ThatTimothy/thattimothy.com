@@ -49,6 +49,10 @@ function updateData() {
     `Min Ping: ${pingData.min}ms\n` +
     `Max Ping: ${pingData.max}ms\n`
         
+    displayData()
+}
+
+function displayData() {
     if (!config) {
         return
     }

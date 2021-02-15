@@ -66,8 +66,6 @@ body {
 
 .projectOpenButtonContainer {
     padding: 10px;
-    background-color: #42b342;
-    border-radius: 20px;
     width: fit-content;
     height: fit-content;
     color: #fff;
@@ -76,6 +74,8 @@ body {
 
 .projectOpenButton {
     padding: 10px;
+    background-color: #42b342;
+    border-radius: 20px;
     color: #fff;
     font-size: 35px;
     font-weight: bold;
