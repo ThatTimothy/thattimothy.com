@@ -20,6 +20,13 @@ const data = [
         IconScale: 1.5,
         Redirect: baseUrl + "/password"
     },
+    {
+        Title: "Ping",
+        Description: "Check your internet's ping periodically. Shows a real-time graph of ping history.",
+        Icon: baseUrl + "/ping/title.png",
+        IconScale: 1.5,
+        Redirect: baseUrl + "/ping"
+    },
 ]
 
 function onPageLoad() {
