@@ -17,6 +17,7 @@ function allLoaded() {
 
     document.body.style.display = "grid"
     document.body.style.gridTemplateRows = "auto 1fr"
+    document.body.style.overflowY = "hidden"
 
     let site_container = document.getElementById('site_container')
     site_container.style.overflowY = "auto"

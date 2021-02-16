@@ -44,5 +44,36 @@
         .hlinks:hover {
             opacity: 0.65;
         }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 25px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        
+        ::-webkit-scrollbar-thumb { 
+            background: rgb(100, 120, 120); 
+            border-radius: 15px;
+            border: solid 8px transparent;
+            background-clip: padding-box;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgb(130, 130, 130); 
+            border: solid 8px transparent;
+            background-clip: padding-box;
+        }
+
+        ::-webkit-scrollbar-button {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+        ::-webkit-scrollbar-corner {
+            background-color: transparent;
+        }
     </style>
 </html>
