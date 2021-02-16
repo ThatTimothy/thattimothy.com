@@ -10,6 +10,8 @@ body {
     background-color: #36393e;
     color: #fff;
     text-align: center;
+    display: grid;
+    height: 100%;
 }
 
 #projectsHeader {
@@ -21,35 +23,43 @@ body {
 
 #projectsContainer {
     margin: auto auto;
-    width: 65%;
-}
+    padding: 0px 50px;
 
-.projectSeparator {
-    margin: 0 auto;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    border-top: solid 1px #fff;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .projectContainer {
-    display: block;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
+    flex-direction: column;
+
+    margin: 10px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
+    width: 500px;
+
+    transition: transform 0.25s, background-color 0.25s;
 }
 
-@media screen and (max-width: 1400px) {
-    /* Phone / Tablet Mode */
-    #projectsContainer {
-        width: 85%;
-    }
+@media screen and (max-width: 1300px) and (min-width: 500px) {
     .projectContainer {
-        grid-template-rows: auto 1fr auto;
-        grid-template-columns: 1fr;
+        width: 95%
     }
-    .projectSeparator {
-        margin-top: 15px;
-        margin-bottom: 10px;
-    }
+}
+
+.projectContainer:hover {
+    background-color: rgba(255, 255, 255, 0.075);
+    transform: translate(0, -5px);
+}
+
+.projectIconContainer {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    padding: 20px;
+    padding-bottom: 10px;
 }
 
 .projectIcon {
@@ -58,14 +68,18 @@ body {
 }
 
 .projectDescription {
+    flex-grow: 1;
     font-size: 25px;
     color: #fff;
     margin: auto auto;
-    padding: 20px;
+    margin-top: 0;
+    padding: 20px 40px;
 }
 
 .projectOpenButtonContainer {
-    padding: 10px;
+    padding: 20px;
+    padding-top: 40px;
+    padding-bottom: 40px;
     width: fit-content;
     height: fit-content;
     color: #fff;
@@ -73,11 +87,37 @@ body {
 }
 
 .projectOpenButton {
-    padding: 10px;
+    padding: 20px;
     background-color: #42b342;
     border-radius: 20px;
     color: #fff;
     font-size: 35px;
     font-weight: bold;
     text-decoration: none;
+    transition: opacity 0.25s;
 }
+
+.projectOpenButton:hover {
+    opacity: 0.75;
+}
+
+/* Scrollbar */
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+  }
+  
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+  }
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888; 
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+  }

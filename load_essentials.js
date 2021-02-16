@@ -1,6 +1,6 @@
 let loaded = 0;
 const toLoad = 3;
-const baseDomain = "https://thattimothy.com"
+const baseDomain = window.location.origin;
 
 let headerData;
 let footerData;
@@ -13,6 +13,20 @@ function allLoaded() {
     document.body.style.position = "relative";
     document.body.style.minWidth = "100%";
     document.body.style.minHeight = "100%";
+    document.body.style.maxHeight = "100%";
+
+    document.body.style.display = "grid"
+    document.body.style.gridTemplateRows = "auto 1fr"
+
+    let site_container = document.getElementById('site_container')
+    site_container.style.overflowY = "auto"
+
+    let site_container_container = document.getElementById('site_container_container')
+    site_container_container.style.display = "flex"
+    site_container_container.style.flexDirection = "column"
+    site_container_container.style.minHeight = "100%"
+    
+    document.getElementById('body').style.flexGrow = 1;
 
     let header = document.getElementById("header");
     header.innerHTML = headerData;
@@ -20,9 +34,7 @@ function allLoaded() {
     footer.innerHTML = footerData;
 
     footer.style = "padding: 0px; margin: 0px;"
-
-    let bodyDiv = document.getElementById("body")
-    bodyDiv.style.paddingBottom = "60px";
+    footer.style.paddingTop = "20px"
 }
 
 fetch(baseDomain + '/header.html').then(function(response) {

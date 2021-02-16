@@ -29,26 +29,35 @@ const data = [
     },
 ]
 
+const baseValue = 10;
+let max = 1;
 function onPageLoad() {
     let baseContainer = document.getElementById('projectsContainer')
     for (let i = 0; i < data.length; i++) {
-        let line = document.createElement('p')
-        line.className = "projectSeparator"
-        baseContainer.append(line)
+        if (data[i].IconScale && data[i].IconScale > max) {
+            max = data[i].IconScale
+        }
+    }
 
+    for (let i = 0; i < data.length; i++) {
         const project = data[i]
         
         let div = document.createElement('div')
         div.className = "projectContainer"
 
+        let iconContainer = document.createElement('div')
+        iconContainer.className = "projectIconContainer"
+
         let icon = document.createElement('img')
         icon.className = "projectIcon"
         icon.src = project.Icon
-        let n = 10;
+        let n = baseValue;
         if (project.IconScale) {
             n *= project.IconScale
         }
         icon.style.height = n + "vh"
+
+        iconContainer.style.height = (max * baseValue) + "vh"
 
         let desc = document.createElement('p')
         desc.className = "projectDescription"
@@ -64,7 +73,8 @@ function onPageLoad() {
 
         openButton.append(href)
 
-        div.append(icon, desc, openButton)
+        iconContainer.append(icon)
+        div.append(iconContainer, desc, openButton)
         baseContainer.appendChild(div)
     }
 }

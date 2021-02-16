@@ -1142,110 +1142,114 @@ input::placeholder {
         
         <div id="header"></div>
 
-        <div id="body">
-            <div style = "position: relative; top: 20px;">
-                <div id="maindiv">
-                    <h1 class="bigh" id = "bigh2"></h1>
-                    <div class="containerimg">
-                        <img id="i1" alt="Image"></img>
-                        <img id="i2" alt="Image"></img>
-                        <button id="lb" onclick="lbf()">&lt;</button>
-                        <button id="rb" onclick="rbf()">&gt;</button>
-                    </div>
-                    
-                    <a class = "s" id="a6" href = "" target = "_blank">
-                        <h1 class="bigh" id = "bigh"></h1>
-                    </a>
+        <div id="site_container">
+            <div id="site_container_container">
+                <div id="body">
+                    <div style = "position: relative; margin-top: 20px;">
+                        <div id="maindiv">
+                            <h1 class="bigh" id = "bigh2"></h1>
+                            <div class="containerimg">
+                                <img id="i1" alt="Image"></img>
+                                <img id="i2" alt="Image"></img>
+                                <button id="lb" onclick="lbf()">&lt;</button>
+                                <button id="rb" onclick="rbf()">&gt;</button>
+                            </div>
+                            
+                            <a class = "s" id="a6" href = "" target = "_blank">
+                                <h1 class="bigh" id = "bigh"></h1>
+                            </a>
 
-                    <div class = "container">
-                        <a class = "s" id="a1" href = "" target = "_blank">
-                            <h3 class = "h">Playing</h3>
-                            <canvas class = "c" id=1></canvas>
-                        </a>
+                            <div class = "container">
+                                <a class = "s" id="a1" href = "" target = "_blank">
+                                    <h3 class = "h">Playing</h3>
+                                    <canvas class = "c" id=1></canvas>
+                                </a>
 
-                        <div class = "s2"> </div>
+                                <div class = "s2"> </div>
 
-                        <a class = "s" id="a2" href = "" target = "_blank">
-                            <h3 class = "h">Total Visits</h3>
-                            <canvas class = "c" id=2></canvas>
-                        </a>
-                        
-                        <div class = "s2"> </div>
+                                <a class = "s" id="a2" href = "" target = "_blank">
+                                    <h3 class = "h">Total Visits</h3>
+                                    <canvas class = "c" id=2></canvas>
+                                </a>
+                                
+                                <div class = "s2"> </div>
 
-                        <a class = "s" id="a3" href = "" target = "_blank">
-                            <h3 class = "h">Favorites</h3>
-                            <canvas class = "c" id=3></canvas>
-                        </a>
-                        
-                        <div class = "s2"> </div>
+                                <a class = "s" id="a3" href = "" target = "_blank">
+                                    <h3 class = "h">Favorites</h3>
+                                    <canvas class = "c" id=3></canvas>
+                                </a>
+                                
+                                <div class = "s2"> </div>
 
-                        <a class = "s" id="a4" href = "" target = "_blank">
-                            <h3 class = "h">Likes</h3>
-                            <canvas class = "c" id=4></canvas>
-                        </a>
-                        
-                        <div class = "s2"> </div>
+                                <a class = "s" id="a4" href = "" target = "_blank">
+                                    <h3 class = "h">Likes</h3>
+                                    <canvas class = "c" id=4></canvas>
+                                </a>
+                                
+                                <div class = "s2"> </div>
 
-                        <a class = "s" id="a5" href = "" target = "_blank">
-                            <h3 class = "h">Dislikes</h3>
-                            <canvas class = "c" id=5></canvas>
-                        </a>
+                                <a class = "s" id="a5" href = "" target = "_blank">
+                                    <h3 class = "h">Dislikes</h3>
+                                    <canvas class = "c" id=5></canvas>
+                                </a>
+                            </div>
+                        </div>
+                        <button id="setb" onclick="setbclick()">⚙</button>
+                        <div id="setdiv" style="display: none;">
+                            <img id="titleImage" src="title.png"></img>
+
+                            <hr style="height:0px; visibility:hidden; margin: 0px;" />
+                            <h1 class="setthh">Add Games</h1>
+
+                            <p class="sett" style="margin-bottom: 0px;">Add by the game's universe id:  <br> (Not roblox.com/games/id. That id is the place id): </p> 
+                            <br>
+                            <input id = "gameAddI2" class="sett" placeholder="Enter a universe id..." onkeydown="addGameIdKeyDown()" type="text">
+                            <button id= "gameAddB2" class="settb" onclick="addGameId()">➔</button>
+
+                            <br>
+                            <br>
+
+                            <p class="sett" style="margin: 0px;">Add by the game's name: </p>
+
+                            <hr style="height: 0px; visibility:hidden; margin: 0px;"/>
+
+                            <input id = "gameAddS1" class="sett" placeholder="Search a game's name..." onkeydown="searchTermsKeyDown()" type="text">
+                            <button id= "gameAddS3" class="settb" onclick="searchTerms()">➔</button>
+                            
+                            <hr style="height: 10px; visibility:hidden; margin: 0px;"/>
+                            <button id= "removeAll" class="settb" onclick="removeAllGames()">Remove All Games</button>
+                            <select id="game_search_options"  style="display: none" size=0>
+                            </select>
+                            <br>
+                            <button id= "gameAddS5" class="settb" onclick="addTerms()" style="display: none">Add Selected ➔</button>
+
+                            <br>
+                            <h1 class="setthh" id="loadedheader">Loaded Games</h1>
+                            <p id ="gamelist" class="sett"></p>
+                            <hr>
+                            <h1 class="setthh" style="margin-top: 20px">Popular</h1>
+                            <button class="settb" onclick="getSort()">Show Top 40 Games</button>
+                            <br>
+                            <hr>
+                            <h1 class="setthh">Customization</h1>
+                            <p class="sett" style="margin: 0px; margin-top: 10px;" >Auto Rotate<br>(Rotate through slowly): </p> <button id="rotateSet" class="settb" onclick="setRotate()">Loading...</button>
+                            <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                            <p class="sett" style="margin: 0px;" >Smart Update: </p> <button id="smartSet" class="settb" onclick="setSmart()">Loading...</button>
+                            <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                            <p class="sett" style="margin: 0px;" >Smart Update updates data every cycle for only the game currently visible.</p> 
+                            <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                            <p class="sett" style="margin: 0px;" >Use CORS Proxy: </p> <button id="proxySet" class="settb" onclick="setProxy()">Loading...</button>
+                            <hr style="height:10px; visibility:hidden; margin: 0px;" />
+                            <p class="sett" style="margin: 0px;" >Only disable this if you understand what it means.</p> 
+                            <br>
+                            <button id="resetSet" class="settb" onclick="setReset()">Update Stats</button>
+
+                        </div>
                     </div>
                 </div>
-                <button id="setb" onclick="setbclick()">⚙</button>
-                <div id="setdiv" style="display: none;">
-                    <img id="titleImage" src="title.png"></img>
 
-                    <hr style="height:0px; visibility:hidden; margin: 0px;" />
-                    <h1 class="setthh">Add Games</h1>
-
-                    <p class="sett" style="margin-bottom: 0px;">Add by the game's universe id:  <br> (Not roblox.com/games/id. That id is the place id): </p> 
-                    <br>
-                    <input id = "gameAddI2" class="sett" placeholder="Enter a universe id..." onkeydown="addGameIdKeyDown()" type="text">
-                    <button id= "gameAddB2" class="settb" onclick="addGameId()">➔</button>
-
-                    <br>
-                    <br>
-
-                    <p class="sett" style="margin: 0px;">Add by the game's name: </p>
-
-                    <hr style="height: 0px; visibility:hidden; margin: 0px;"/>
-
-                    <input id = "gameAddS1" class="sett" placeholder="Search a game's name..." onkeydown="searchTermsKeyDown()" type="text">
-                    <button id= "gameAddS3" class="settb" onclick="searchTerms()">➔</button>
-                    
-                    <hr style="height: 10px; visibility:hidden; margin: 0px;"/>
-                    <button id= "removeAll" class="settb" onclick="removeAllGames()">Remove All Games</button>
-                    <select id="game_search_options"  style="display: none" size=0>
-                    </select>
-                    <br>
-                    <button id= "gameAddS5" class="settb" onclick="addTerms()" style="display: none">Add Selected ➔</button>
-
-                    <br>
-                    <h1 class="setthh" id="loadedheader">Loaded Games</h1>
-                    <p id ="gamelist" class="sett"></p>
-                    <hr>
-                    <h1 class="setthh" style="margin-top: 20px">Popular</h1>
-                    <button class="settb" onclick="getSort()">Show Top 40 Games</button>
-                    <br>
-                    <hr>
-                    <h1 class="setthh">Customization</h1>
-                    <p class="sett" style="margin: 0px; margin-top: 10px;" >Auto Rotate<br>(Rotate through slowly): </p> <button id="rotateSet" class="settb" onclick="setRotate()">Loading...</button>
-                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
-                    <p class="sett" style="margin: 0px;" >Smart Update: </p> <button id="smartSet" class="settb" onclick="setSmart()">Loading...</button>
-                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
-                    <p class="sett" style="margin: 0px;" >Smart Update updates data every cycle for only the game currently visible.</p> 
-                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
-                    <p class="sett" style="margin: 0px;" >Use CORS Proxy: </p> <button id="proxySet" class="settb" onclick="setProxy()">Loading...</button>
-                    <hr style="height:10px; visibility:hidden; margin: 0px;" />
-                    <p class="sett" style="margin: 0px;" >Only disable this if you understand what it means.</p> 
-                    <br>
-                    <button id="resetSet" class="settb" onclick="setReset()">Update Stats</button>
-
-                </div>
+                <div id="footer"></div>
             </div>
         </div>
-
-        <div id="footer"></div>
     </body>
 </html>

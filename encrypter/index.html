@@ -14,37 +14,41 @@
     <body onload="onLoad()">
         <div id="header"></div>
     
-        <div id="body">
-            <div id="top">
-                <img id="title" src="title.png"></img>
-                <br>
-                <button class="topButton" onclick="changeMenu(1)">Encode a message
-                    <p class="smallinfo">Secret Text → Y/?LGAZ*D]}</p>
-                </button>
-                <button class="topButton" onclick="changeMenu(2)">Decode a message
-                    <p class="smallinfo">Y/?LGAZ*D]} → Secret Text</p>
-                </button>
-            </div>
-            <div id="content" style="display:none">
-                <div>
-                    <button id="changeMode" class="topButton" onclick="changeMenu(0)">Change Mode</button>
-                    <p id="hint">Hint text</p>
-                </div>
+        <div id="site_container">
+            <div id="site_container_container">
+                <div id="body">
+                    <div id="top">
+                        <img id="title" src="title.png"></img>
+                        <br>
+                        <button class="topButton" onclick="changeMenu(1)">Encode a message
+                            <p class="smallinfo">Secret Text → Y/?LGAZ*D]}</p>
+                        </button>
+                        <button class="topButton" onclick="changeMenu(2)">Decode a message
+                            <p class="smallinfo">Y/?LGAZ*D]} → Secret Text</p>
+                        </button>
+                    </div>
+                    <div id="content" style="display:none">
+                        <div>
+                            <button id="changeMode" class="topButton" onclick="changeMenu(0)">Change Mode</button>
+                            <p id="hint">Hint text</p>
+                        </div>
 
-                <p class="info">Keyword</p>
-                <input id="keyword" class="field" type="text" placeholder="Enter keyword...">
-                <p class="smallinfo">A keyword is used to encode and decode text. It's like a password to translate between encoded (garbled) and regular text.</p>
-                
-                <p id="headerPart2" class="info">The Text</p>
-                <textarea id="input" class="field" placeholder="To exist... or to not exist, that is the question."></textarea>
-                <p id="hint2" class="smallinfo">Helpful info here</p>
-                <button id="activateButton">Do Stuff!</button>
-                <p id="outputHint" class="info"></p>
-                <p id="output" class="smallinfo"></p>
-                <button id="clipboardCopy" onclick="copyToClipboard()">Copy To Clipboard</button>
+                        <p class="info">Keyword</p>
+                        <input id="keyword" class="field" type="text" placeholder="Enter keyword...">
+                        <p class="smallinfo">A keyword is used to encode and decode text. It's like a password to translate between encoded (garbled) and regular text.</p>
+                        
+                        <p id="headerPart2" class="info">The Text</p>
+                        <textarea id="input" class="field" placeholder="To exist... or to not exist, that is the question."></textarea>
+                        <p id="hint2" class="smallinfo">Helpful info here</p>
+                        <button id="activateButton">Do Stuff!</button>
+                        <p id="outputHint" class="info"></p>
+                        <p id="output" class="smallinfo"></p>
+                        <button id="clipboardCopy" onclick="copyToClipboard()">Copy To Clipboard</button>
+                    </div>
+                </div>
+        
+                <div id="footer"></div>
             </div>
         </div>
-  
-        <div id="footer"></div>
     </body>
 </html>
