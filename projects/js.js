@@ -15,14 +15,14 @@ const data = [
     },
     {
         Title: "Password Generator",
-        Description: "Generate a completely random password of any length with the click of a button!",
+        Description: "Generate a completely random password of any length with the click of a button! Choose to include letters, numbers, and symbols in generation.",
         Icon: baseUrl + "/password/title.png",
         IconScale: 1.5,
         Redirect: baseUrl + "/password"
     },
     {
         Title: "Ping",
-        Description: "Check your internet's ping periodically. Shows a real-time graph of ping history.",
+        Description: "Check your internet's ping periodically. Shows a real-time graph of ping history, with optional ping rate settings for more accurate results.",
         Icon: baseUrl + "/ping/title.png",
         IconScale: 1,
         Redirect: baseUrl + "/ping"
