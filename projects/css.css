@@ -16,7 +16,7 @@ body {
 
 #mainContainer {
     opacity: 0;
-    transform: translateY(10%);
+    transform: translateY(10vh);
     transition: opacity 0.5s, transform 0.5s;
 }
 

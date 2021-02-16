@@ -79,6 +79,9 @@ function onPageLoad() {
     }
 
     const main = document.getElementById('mainContainer')
+    main.style.opacity = 0
+    main.style.transform = "translateY(10vh)"
+    main.style.transition ="opacity 0.5s, transform 0.5s;"
     main.style.opacity = 1
     main.style.transform = "translateY(0)"
 }
