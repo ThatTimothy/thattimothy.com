@@ -19,9 +19,23 @@
                     <div id="top">
                         <img id="title" src="title.png"></img>
                     </div>
-                    <div id="content"><p class="info">Characters To Generate</p>
+                    <div id="content">
+                        <p class="info">Characters To Generate</p>
                         <input id="input" class="field" type="text" placeholder="Enter a number...">
                         <p class="smallinfo">If you enter 10, you will get a 10 character password.</p>
+
+                        <p class="info" id="info3">Characters To Use</p>
+                        <div id="checkContainer">
+                            <p class="checkinfo">a-z</p>
+                            <input id="checkLower" class="check" type="checkbox" checked=true>
+                            <p class="checkinfo">A-Z</p>
+                            <input id="checkUpper" class="check" type="checkbox" checked=true>
+                            <p class="checkinfo">0-9</p>
+                            <input id="checkNumber" class="check" type="checkbox" checked=true>
+                            <p class="checkinfo">!@#$</p>
+                            <input id="checkSymbol" class="check" type="checkbox" checked=true>
+                        </div>
+                        <p class="smallinfo">Anything that has a check will be used, click to change the checks.</p>
 
                         <button id="activateButton" onclick="generatePassword()">Generate!</button>
                         <p id="outputHint" class="info"></p>

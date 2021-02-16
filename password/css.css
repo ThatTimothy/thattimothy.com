@@ -66,7 +66,7 @@ button {
     opacity: 0.95;
 }
 
-.info, .smallinfo {
+.info, .smallinfo, .checkinfo {
     color: #ffffff;
     font-size: 30px;
     margin: 5px;
@@ -81,9 +81,12 @@ button {
 }
 
 #activateButton {
-    margin-top: 10px;
+    margin-top: 30px;
     font-size: 50px;
     padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
 }
 
 #output {
@@ -105,4 +108,59 @@ button {
 #title {
     object-fit: contain;
     width: 35%;
+}
+
+#checkContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.checkinfo {
+    width: fit-content;
+    display: inline;
+    padding-left: 15px;
+    padding-right: 5px;
+}
+
+.check {
+    appearance: none;
+    background-color: rgb(32, 32, 32);
+    border: 1px solid #cacece;
+	box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+	padding: 9px;
+	border-radius: 3px;
+	display: inline-block;
+	position: relative;
+    width: 30px;
+    height: 30px;
+    margin: auto 0;
+}
+
+.check:checked {
+    background-color: rgb(56, 146, 38);
+}
+
+.check:after {
+	content: '✖';
+	font-size: 20px;
+	position: absolute;
+    color: #ff0000;
+	top: -1px;
+	left: 6px;
+}
+
+.check:checked:after {
+	content: '\2714';
+    color: #fff;
+	top: 0px;
+	left: 6px;
+}
+
+#info3 {
+    margin-top: 25px;
+    margin-bottom: 0;
 }

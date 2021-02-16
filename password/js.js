@@ -1,19 +1,51 @@
 let topDiv, outputHint, output, input, clipboardCopy
-let pairing = "" //all symbols, letters, and numbers
 function onLoad() {
     topDiv = document.getElementById('top')
     outputHint = document.getElementById('outputHint')
     input = document.getElementById('input')
     output = document.getElementById('output')
     clipboardCopy = document.getElementById('clipboardCopy')
-    for (let i = 33; i <= 126; i++) {
-        pairing += String.fromCharCode(i)
-    }
 }
 
 function generatePassword() {
+    let pairing = ""
+
+    if (document.getElementById('checkUpper').checked) {
+        for (let i = 65; i <= 90; i++) {
+            pairing += String.fromCharCode(i)
+        }
+    }
+
+    if (document.getElementById('checkLower').checked) {
+        for (let i = 97; i <= 122; i++) {
+            pairing += String.fromCharCode(i)
+        }
+    }
+
+    if (document.getElementById('checkNumber').checked) {
+        for (let i = 0; i <= 9; i++) {
+            pairing += i
+        }
+    }
+
+    if (document.getElementById('checkSymbol').checked) {
+        for (let i = 33; i <= 47; i++) {
+            pairing += String.fromCharCode(i)
+        }
+        for (let i = 58; i <= 64; i++) {
+            pairing += String.fromCharCode(i)
+        }
+        for (let i = 123; i <= 126; i++) {
+            pairing += String.fromCharCode(i)
+        }
+    }
+
+    if (pairing.length === 0) {
+        alert("Please select at least one checkbox!")
+    }
+    
     let num = parseInt(input.value)
-    if (input.value.length === 0 && num) {
+    if (input.value.length === 0 || !num || num === 0) {
         alert("Enter a number!")
         return
     }
