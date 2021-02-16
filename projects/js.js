@@ -77,4 +77,8 @@ function onPageLoad() {
         div.append(iconContainer, desc, openButton)
         baseContainer.appendChild(div)
     }
+
+    const main = document.getElementById('mainContainer')
+    main.style.opacity = 1
+    main.style.transform = "translateY(0)"
 }

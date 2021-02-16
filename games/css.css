@@ -12,6 +12,12 @@ body {
     text-align: center;
 }
 
+#mainContainer {
+    opacity: 0;
+    transform: translateY(10%);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
 #projectsHeader {
     width: fit-content;
     margin: 15px auto;
