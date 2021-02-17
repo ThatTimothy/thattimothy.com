@@ -36,6 +36,23 @@ function allLoaded() {
 
     footer.style = "padding: 0px; margin: 0px;"
     footer.style.paddingTop = "20px"
+
+    let footer_contents = footer.querySelector('#footer_contents').querySelector('#footer_contents_container')
+
+    footer_contents.animate([
+        {
+            opacity: 0,
+            transform: 'translate(-50%, 100%)',
+        },
+        {
+            opacity: 1,
+            transform: 'translate(-50%, 0%)',
+        },
+    ], {
+        duration: 250,
+        iterations: 1,
+        fill: 'forwards'
+    })
 }
 
 fetch(baseDomain + '/header.html').then(function(response) {

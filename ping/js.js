@@ -13,9 +13,9 @@ let showLast = 15 * 1000;
 function getPingData(n) {
     n = Math.floor(n)
     let last = data[data.length - 1]
-    let min = last;
-    let max = last;
-    let total = last;
+    let min = last || 99999999;
+    let max = last || 0;
+    let total = last || 0;
     let nums = 1;
 
     for (let i = 1; i <= n; i++) {
@@ -32,11 +32,12 @@ function getPingData(n) {
         }
     }
 
+    let average = Math.floor(total / nums)
     return {
-        last: last,
-        average: Math.floor(total / nums),
-        min: min,
-        max: max,
+        last: (last) ? last + 'ms' : 'Failed',
+        average: (average !== 0) ? average + 'ms' : 'Failed',
+        min: (min !== 99999999) ? min + 'ms' : 'Failed',
+        max: (max !== 0) ? max + 'ms' : 'Failed',
     };
 }
 
@@ -44,10 +45,10 @@ function updateData() {
     let pingData = getPingData(showLast / every)
 
     document.getElementById('lastPing').innerText = 
-    `Last Ping: ${pingData.last}ms\n` +
-    `Average Ping: ${pingData.average}ms\n` +
-    `Min Ping: ${pingData.min}ms\n` +
-    `Max Ping: ${pingData.max}ms\n`
+    `Last Ping: ${pingData.last}\n` +
+    `Average Ping: ${pingData.average}\n` +
+    `Min Ping: ${pingData.min}\n` +
+    `Max Ping: ${pingData.max}\n`
         
     displayData()
 }
@@ -76,18 +77,36 @@ function displayData() {
     chart.update()
 }
 
+function updateInProgress(id) {
+    if (inprogress[id].length === batchSize) {
+        let result = inprogress[id].sort(function(a, b) {
+            if (a && b) {
+                return a-b;
+            } else {
+                return false;
+            }
+        })[Math.floor(batchSize / 2)]
+        data[id] = result
+        inprogress[id] = null;
+        updateData()
+    }
+
+}
+
 function registerPing(id, ms) {
     if (!inprogress[id]) {
         inprogress[id] = []
     }
     inprogress[id].push(ms)
+    updateInProgress(id)
+}
 
-    if (inprogress[id].length === batchSize) {
-        let result = inprogress[id].sort()[Math.floor(batchSize / 2)]
-        data[id] = result
-        inprogress[id] = null;
-        updateData()
+function registerFail(id) {
+    if (!inprogress[id]) {
+        inprogress[id] = []
     }
+    inprogress[id].push(null)
+    updateInProgress(id)
 }
 
 function batchPing() {
